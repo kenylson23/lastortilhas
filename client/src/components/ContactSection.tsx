@@ -46,28 +46,6 @@ export default function ContactSection() {
     mutationFn: (data: ReservationFormData) => {
       return apiRequest("POST", "/api/reservations", data);
     },
-    onSuccess: (_, variables) => {
-      // Redirect to WhatsApp with reservation details
-      const message = encodeURIComponent(
-        `🌮 *Nova Reserva - Las Tortillas* 🌮\n\n` +
-        `*Nome:* ${variables.name}\n` +
-        `*Telefone:* ${variables.phone}\n` +
-        `*Data:* ${variables.date}\n` +
-        `*Hora:* ${variables.time}\n` +
-        `*Pessoas:* ${variables.guests}\n` +
-        `*Mensagem:* ${variables.message || 'Nenhuma'}\n\n` +
-        `Obrigado pela sua reserva! Entraremos em contato para confirmar.`
-      );
-      
-      // Open WhatsApp in a new tab
-      window.open(`${whatsappLink}?text=${message}`, '_blank');
-      
-      toast({
-        title: "Reserva enviada com sucesso!",
-        description: "Você será redirecionado para WhatsApp para confirmar sua reserva.",
-      });
-      form.reset();
-    },
     onError: (error) => {
       toast({
         title: "Erro ao enviar a reserva",
@@ -78,7 +56,30 @@ export default function ContactSection() {
   });
 
   const onSubmit = (data: ReservationFormData) => {
+    // Criando a mensagem formatada para o WhatsApp
+    const message = encodeURIComponent(
+      `🌮 *Nova Reserva - Las Tortillas* 🌮\n\n` +
+      `*Nome:* ${data.name}\n` +
+      `*Telefone:* ${data.phone}\n` +
+      `*Data:* ${data.date}\n` +
+      `*Hora:* ${data.time}\n` +
+      `*Pessoas:* ${data.guests}\n` +
+      `*Mensagem:* ${data.message || 'Nenhuma'}\n\n` +
+      `Obrigado pela sua reserva! Entraremos em contato para confirmar.`
+    );
+    
+    // Abre o WhatsApp diretamente com a mensagem preenchida
+    window.open(`${whatsappLink}?text=${message}`, '_blank');
+    
+    // Também salva no sistema
     mutation.mutate(data);
+    
+    // Mostra mensagem de sucesso e limpa o formulário
+    toast({
+      title: "Reserva enviada com sucesso!",
+      description: "Os detalhes foram enviados para WhatsApp.",
+    });
+    form.reset();
   };
 
   return (
