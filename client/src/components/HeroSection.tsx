@@ -28,7 +28,7 @@ export default function HeroSection() {
           playsInline
           className="absolute top-0 left-0 min-w-full min-h-full w-auto h-auto object-cover"
         >
-          <source src="/videos/hero-background.mp4" type="video/mp4" />
+          <source src="/hero-background.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>
