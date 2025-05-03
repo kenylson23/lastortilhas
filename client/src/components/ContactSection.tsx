@@ -69,8 +69,8 @@ export default function ContactSection() {
 Obrigado pela sua reserva! Entraremos em contato para confirmar.`);
     
     // Usando a API direta do WhatsApp com o número de telefone (formato internacional)
-    // O número 244923456789 deve ser substituído pelo número real do restaurante
-    const whatsappApiUrl = `https://api.whatsapp.com/send?phone=244923456789&text=${message}`;
+    // Número de WhatsApp do restaurante
+    const whatsappApiUrl = `https://api.whatsapp.com/send?phone=244949639932&text=${message}`;
     
     // Salvando no sistema primeiro
     mutation.mutate(data);
@@ -186,7 +186,7 @@ Obrigado pela sua reserva! Entraremos em contato para confirmar.`);
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-800 mb-1">Telefone</h4>
-                    <p className="text-gray-600">+244 923 456 789</p>
+                    <p className="text-gray-600">+244 949 639 932</p>
                   </div>
                 </motion.div>
                 
