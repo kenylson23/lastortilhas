@@ -39,14 +39,32 @@ export default function ContactSection() {
     },
   });
   
+  // WhatsApp link
+  const whatsappLink = "https://wa.link/svsf4j";
+  
   const mutation = useMutation({
     mutationFn: (data: ReservationFormData) => {
       return apiRequest("POST", "/api/reservations", data);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      // Redirect to WhatsApp with reservation details
+      const message = encodeURIComponent(
+        `🌮 *Nova Reserva - Las Tortillas* 🌮\n\n` +
+        `*Nome:* ${variables.name}\n` +
+        `*Telefone:* ${variables.phone}\n` +
+        `*Data:* ${variables.date}\n` +
+        `*Hora:* ${variables.time}\n` +
+        `*Pessoas:* ${variables.guests}\n` +
+        `*Mensagem:* ${variables.message || 'Nenhuma'}\n\n` +
+        `Obrigado pela sua reserva! Entraremos em contato para confirmar.`
+      );
+      
+      // Open WhatsApp in a new tab
+      window.open(`${whatsappLink}?text=${message}`, '_blank');
+      
       toast({
         title: "Reserva enviada com sucesso!",
-        description: "Entraremos em contato para confirmar sua reserva.",
+        description: "Você será redirecionado para WhatsApp para confirmar sua reserva.",
       });
       form.reset();
     },
