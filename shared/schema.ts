@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, date, time } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, date, time, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -21,7 +21,8 @@ export const reservations = pgTable("reservations", {
   time: text("time").notNull(),
   guests: text("guests").notNull(),
   message: text("message"),
-  created_at: text("created_at").default("now()"),
+  status: text("status").default("pendente"), // pendente, confirmada, cancelada
+  created_at: timestamp("created_at").defaultNow(),
 });
 
 export const insertReservationSchema = createInsertSchema(reservations).pick({
