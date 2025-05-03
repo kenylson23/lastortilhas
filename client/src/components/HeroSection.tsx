@@ -1,21 +1,39 @@
 import { motion } from "framer-motion";
 import { MexicanButton } from "./ui/button-variant";
 import { FaChevronDown } from "react-icons/fa";
+import { useEffect, useRef } from "react";
 
 export default function HeroSection() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.7; // Slow down the video for better visual effect
+    }
+  }, []);
+
   return (
     <section 
       id="home" 
       className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1606509036992-4399d5c5afe4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')`,
-        backgroundAttachment: "fixed",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover"
-      }}
     >
-      <div className="text-center">
+      {/* Video Background */}
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+        <div className="absolute inset-0 bg-black bg-opacity-60 z-10"></div>
+        <video 
+          ref={videoRef}
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          className="absolute top-0 left-0 min-w-full min-h-full w-auto h-auto object-cover"
+        >
+          <source src="/videos/hero-background.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <div className="text-center z-10 relative">
         <motion.div 
           className="text-white mb-6"
           initial={{ opacity: 0, y: 50 }}
@@ -78,7 +96,7 @@ export default function HeroSection() {
       </div>
       
       <motion.div 
-        className="absolute bottom-10 w-full text-center"
+        className="absolute bottom-10 w-full text-center z-10"
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
