@@ -54,8 +54,15 @@ export default function Header() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <span className="text-primary font-playfair font-bold text-2xl md:text-3xl">Las Tortillas</span>
-          <span className="text-secondary ml-2 text-sm italic">Sabor Mexicano em Angola</span>
+          <img 
+            src="/images/logo.jpg" 
+            alt="Las Tortillas Logo" 
+            className="h-12 w-12 mr-3 rounded-full border border-white shadow-md"
+          />
+          <div className="flex flex-col">
+            <span className="text-primary font-playfair font-bold text-2xl md:text-3xl">Las Tortillas</span>
+            <span className="text-secondary text-xs italic">Sabor Mexicano em Angola</span>
+          </div>
         </motion.div>
         
         {/* Desktop Navigation */}

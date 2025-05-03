@@ -42,13 +42,13 @@ export default function HeroSection() {
         >
           <motion.div 
             className="flex justify-center mb-2"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
             <img 
-              src="https://cdn-icons-png.flaticon.com/512/2313/2313906.png" 
-              alt="Mexican hat icon" 
-              className="w-20 h-20 opacity-80" 
+              src="/images/logo.jpg" 
+              alt="Las Tortillas Logo" 
+              className="w-40 h-40 rounded-full shadow-lg border-2 border-white" 
             />
           </motion.div>
           <motion.h1 

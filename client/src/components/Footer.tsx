@@ -31,14 +31,21 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <motion.div 
-            className="mb-6 md:mb-0"
+            className="mb-6 md:mb-0 flex items-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h3 className="font-playfair text-2xl font-bold">Las Tortillas</h3>
-            <p className="text-white text-opacity-80 mt-2">Autêntico sabor mexicano em Angola</p>
+            <img 
+              src="/images/logo.jpg" 
+              alt="Las Tortillas Logo" 
+              className="h-12 w-12 mr-3 rounded-full border border-white shadow-md" 
+            />
+            <div>
+              <h3 className="font-playfair text-2xl font-bold">Las Tortillas</h3>
+              <p className="text-white text-opacity-80 text-sm">Autêntico sabor mexicano em Angola</p>
+            </div>
           </motion.div>
           
           <motion.div 
