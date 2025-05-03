@@ -39,8 +39,8 @@ export default function ContactSection() {
     },
   });
   
-  // WhatsApp link
-  const whatsappLink = "https://wa.link/svsf4j";
+  // Número do WhatsApp para envio das reservas
+  const phoneNumber = "+244923456789"; // Substitua pelo número real do restaurante
   
   const mutation = useMutation({
     mutationFn: (data: ReservationFormData) => {
@@ -56,29 +56,32 @@ export default function ContactSection() {
   });
 
   const onSubmit = (data: ReservationFormData) => {
-    // Criando a mensagem formatada para o WhatsApp
-    const message = encodeURIComponent(
-      `🌮 *Nova Reserva - Las Tortillas* 🌮\n\n` +
-      `*Nome:* ${data.name}\n` +
-      `*Telefone:* ${data.phone}\n` +
-      `*Data:* ${data.date}\n` +
-      `*Hora:* ${data.time}\n` +
-      `*Pessoas:* ${data.guests}\n` +
-      `*Mensagem:* ${data.message || 'Nenhuma'}\n\n` +
-      `Obrigado pela sua reserva! Entraremos em contato para confirmar.`
-    );
+    // Variável para armazenar a mensagem formatada
+    const message = `🌮 *Nova Reserva - Las Tortillas* 🌮
+
+*Nome:* ${data.name}
+*Telefone:* ${data.phone}
+*Data:* ${data.date}
+*Hora:* ${data.time}
+*Pessoas:* ${data.guests}
+*Mensagem:* ${data.message || 'Nenhuma'}
+
+Obrigado pela sua reserva! Entraremos em contato para confirmar.`;
     
-    // Abre o WhatsApp diretamente com a mensagem preenchida
-    window.open(`${whatsappLink}?text=${message}`, '_blank');
+    // Tenta método direto para o WhatsApp
+    const whatsappUrl = `https://wa.link/svsf4j`;
+    window.location.href = `${whatsappUrl}`;
     
-    // Também salva no sistema
+    // Salva no sistema do restaurante
     mutation.mutate(data);
     
     // Mostra mensagem de sucesso e limpa o formulário
     toast({
       title: "Reserva enviada com sucesso!",
-      description: "Os detalhes foram enviados para WhatsApp.",
+      description: "Você será redirecionado para WhatsApp em instantes.",
     });
+    
+    // Limpa o formulário
     form.reset();
   };
 
