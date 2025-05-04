@@ -10,6 +10,7 @@ import AdminDashboard from "@/pages/admin/admin-dashboard";
 import AdminCategories from "@/pages/admin/admin-categories";
 import AdminMenu from "@/pages/admin/admin-menu";
 import AdminReservations from "@/pages/admin/admin-reservations";
+import AdminSettings from "@/pages/admin/admin-settings";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
@@ -31,6 +32,9 @@ function Router() {
       </Route>
       <Route path="/admin/reservations">
         <ProtectedRoute path="/admin/reservations" component={AdminReservations} />
+      </Route>
+      <Route path="/admin/settings">
+        <ProtectedRoute path="/admin/settings" component={AdminSettings} />
       </Route>
       
       {/* Fallback to 404 */}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { 
   Plus, 
   Pencil, 
@@ -9,7 +10,8 @@ import {
   X,
   Image,
   Star,
-  Upload
+  Upload,
+  Utensils
 } from "lucide-react";
 import { 
   Table, 
@@ -93,6 +95,7 @@ export default function AdminMenu() {
   const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
   const [activeTab, setActiveTab] = useState("all");
   
+  const [_, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
