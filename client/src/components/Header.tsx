@@ -1,7 +1,17 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "wouter";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { href: "#home", label: "Início" },
@@ -15,6 +25,7 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [, setLocation] = useLocation();
+  const { user, logoutMutation } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,7 +78,7 @@ export default function Header() {
         
         {/* Desktop Navigation */}
         <motion.nav 
-          className="hidden md:flex space-x-8"
+          className="hidden md:flex items-center space-x-8"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -89,10 +100,81 @@ export default function Header() {
               {link.label}
             </motion.a>
           ))}
+
+          {/* Botões de Login/Usuário */}
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="ml-4">
+                  <User className="h-4 w-4 mr-2" />
+                  <span>{user.username}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                  className="text-red-500 cursor-pointer"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <Button 
+                size="sm" 
+                variant="default"
+                onClick={() => setLocation("/auth")}
+                className="bg-primary hover:bg-primary/90"
+              >
+                <User className="h-4 w-4 mr-2" />
+                Login
+              </Button>
+            </motion.div>
+          )}
         </motion.nav>
         
-        {/* Mobile menu button */}
-        <div className="md:hidden">
+        {/* Mobile menu button & user menu */}
+        <div className="md:hidden flex items-center space-x-2">
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <User className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Olá, {user.username}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                  className="text-red-500 cursor-pointer"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button 
+              size="sm" 
+              variant="default" 
+              onClick={() => setLocation("/auth")}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <User className="h-4 w-4" />
+            </Button>
+          )}
+
           <button 
             onClick={() => setIsOpen(!isOpen)}
             className="text-gray-800 focus:outline-none"
@@ -134,6 +216,40 @@ export default function Header() {
                   {link.label}
                 </motion.a>
               ))}
+              
+              {/* Link de autenticação ou logout */}
+              {user ? (
+                <motion.button
+                  className="text-left font-montserrat text-red-500 hover:text-red-700 transition-colors duration-300 py-2 border-b border-gray-100 flex items-center"
+                  onClick={() => {
+                    logoutMutation.mutate();
+                    setIsOpen(false);
+                  }}
+                  disabled={logoutMutation.isPending}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.05 * (navLinks.length + 1) }}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {logoutMutation.isPending ? "Saindo..." : "Logout"}
+                </motion.button>
+              ) : (
+                <motion.a
+                  href="/auth"
+                  className="font-montserrat text-primary hover:text-primary/80 transition-colors duration-300 py-2 border-b border-gray-100 flex items-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsOpen(false);
+                    setLocation("/auth");
+                  }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.05 * (navLinks.length + 1) }}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Login / Cadastro
+                </motion.a>
+              )}
             </div>
           </motion.div>
         )}
