@@ -2,8 +2,12 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertReservationSchema } from "@shared/schema";
+import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configurar autenticação
+  setupAuth(app);
+
   // Restaurant reservation API route
   app.post("/api/reservations", async (req, res) => {
     try {
