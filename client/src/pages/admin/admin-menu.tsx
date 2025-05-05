@@ -1,94 +1,43 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { 
-  Plus, 
-  Pencil, 
-  Trash2, 
-  Loader2,
-  Save,
-  X,
-  Image,
-  Star,
-  Upload,
-  Utensils
-} from "lucide-react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { apiRequest, getQueryFn } from "@/lib/queryClient";
-import { 
-  insertMenuItemSchema, 
-  type MenuItem, 
-  type MenuCategory 
-} from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
+import { Loader2, Plus, Pencil, Trash2, Save, X, Star, Image, Utensils } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import AdminLayout from "./admin-layout";
+import { MenuItem, MenuCategory } from "@shared/schema";
 
-// Esquema de formulário para item do menu
-const menuItemFormSchema = insertMenuItemSchema.extend({
-  price: z.coerce.number().min(0).step(0.01),
-  category_id: z.coerce.number(),
-  spicy_level: z.coerce.number().min(0).max(5).default(0),
-  order: z.coerce.number().default(0),
+// Esquema do formulário de item de menu
+const menuItemFormSchema = z.object({
+  name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres"),
+  description: z.string().optional(),
+  price: z.coerce.number().min(0, "O preço não pode ser negativo"),
+  image: z.string().optional(),
+  category_id: z.number().min(1, "Selecione uma categoria"),
+  spicy_level: z.coerce.number().min(0).max(5),
+  featured: z.boolean().default(false),
+  vegetarian: z.boolean().default(false),
+  available: z.boolean().default(true),
+  order: z.coerce.number().min(0)
 });
 
 export default function AdminMenu() {
+  // Estados locais
   const [isCreating, setIsCreating] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -237,9 +186,9 @@ export default function AdminMenu() {
       image: item.image || "",
       category_id: item.category_id,
       spicy_level: item.spicy_level || 0,
-      featured: Boolean(item.featured),
-      vegetarian: Boolean(item.vegetarian),
-      available: Boolean(item.available),
+      featured: !!item.featured,
+      vegetarian: !!item.vegetarian,
+      available: item.available === undefined ? true : !!item.available,
       order: item.order || 0
     });
   };
@@ -269,7 +218,7 @@ export default function AdminMenu() {
   };
   
   // Renderizar nível de picante
-  const renderSpicyLevel = (level: number | null) => {
+  const renderSpicyLevel = (level: number | null | undefined) => {
     const spicyLevel = level || 0;
     const elements = [];
     for (let i = 0; i < 5; i++) {
@@ -526,8 +475,8 @@ export default function AdminMenu() {
                                   <FormLabel>Categoria</FormLabel>
                                   <Select 
                                     onValueChange={(value) => field.onChange(parseInt(value))}
-                                    defaultValue={field.value.toString()}
-                                    value={field.value.toString()}
+                                    defaultValue={field.value?.toString()}
+                                    value={field.value?.toString()}
                                   >
                                     <FormControl>
                                       <SelectTrigger>
@@ -647,7 +596,7 @@ export default function AdminMenu() {
                                     </div>
                                     <FormControl>
                                       <Switch
-                                        checked={field.value}
+                                        checked={!!field.value}
                                         onCheckedChange={field.onChange}
                                       />
                                     </FormControl>
@@ -668,7 +617,7 @@ export default function AdminMenu() {
                                     </div>
                                     <FormControl>
                                       <Switch
-                                        checked={field.value}
+                                        checked={!!field.value}
                                         onCheckedChange={field.onChange}
                                       />
                                     </FormControl>
@@ -689,7 +638,7 @@ export default function AdminMenu() {
                                     </div>
                                     <FormControl>
                                       <Switch
-                                        checked={field.value}
+                                        checked={!!field.value}
                                         onCheckedChange={field.onChange}
                                       />
                                     </FormControl>

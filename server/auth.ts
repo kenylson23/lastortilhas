@@ -44,13 +44,13 @@ export function setupAuth(app: Express) {
   // Configuração da sessão
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "las_tortillas_secret_key",
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     store: sessionStore,
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 dias
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: 'lax'
     }
   };
