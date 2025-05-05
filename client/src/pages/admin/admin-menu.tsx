@@ -236,11 +236,11 @@ export default function AdminMenu() {
       price: item.price,
       image: item.image || "",
       category_id: item.category_id,
-      spicy_level: item.spicy_level,
-      featured: item.featured,
-      vegetarian: item.vegetarian,
-      available: item.available,
-      order: item.order
+      spicy_level: item.spicy_level || 0,
+      featured: Boolean(item.featured),
+      vegetarian: Boolean(item.vegetarian),
+      available: Boolean(item.available),
+      order: item.order || 0
     });
   };
   
@@ -269,13 +269,14 @@ export default function AdminMenu() {
   };
   
   // Renderizar nível de picante
-  const renderSpicyLevel = (level: number) => {
+  const renderSpicyLevel = (level: number | null) => {
+    const spicyLevel = level || 0;
     const elements = [];
     for (let i = 0; i < 5; i++) {
       elements.push(
         <span 
           key={i} 
-          className={`text-lg ${i < level ? 'text-red-500' : 'text-gray-300'}`}
+          className={`text-lg ${i < spicyLevel ? 'text-red-500' : 'text-gray-300'}`}
         >
           🌶️
         </span>
@@ -484,7 +485,11 @@ export default function AdminMenu() {
                                   <Textarea 
                                     placeholder="Descrição do item" 
                                     className="min-h-[120px]"
-                                    {...field} 
+                                    value={field.value || ''}
+                                    onChange={field.onChange}
+                                    onBlur={field.onBlur}
+                                    name={field.name}
+                                    ref={field.ref}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -554,7 +559,14 @@ export default function AdminMenu() {
                                 <FormLabel>URL da Imagem</FormLabel>
                                 <FormControl>
                                   <div className="flex">
-                                    <Input placeholder="URL da imagem" {...field} />
+                                    <Input 
+                                      placeholder="URL da imagem" 
+                                      value={field.value || ''}
+                                      onChange={field.onChange}
+                                      onBlur={field.onBlur}
+                                      name={field.name}
+                                      ref={field.ref}
+                                    />
                                   </div>
                                 </FormControl>
                                 <FormDescription>
