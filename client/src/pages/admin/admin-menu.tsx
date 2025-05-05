@@ -95,7 +95,7 @@ export default function AdminMenu() {
   const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
   const [activeTab, setActiveTab] = useState("all");
   
-  const [_, navigate] = useLocation();
+  const [__, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
