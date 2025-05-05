@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     },
     onError: (error: Error) => {
+      console.error("Erro no login:", error);
       toast({
         title: "Falha no login",
         description: error.message,
