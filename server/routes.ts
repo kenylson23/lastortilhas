@@ -106,20 +106,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // ===== ROTAS ADMINISTRATIVAS =====
   
-  // Middleware para verificar se o usuário é um administrador
-  const adminRoutes = [
-    "/api/admin/menu/categories",
-    "/api/admin/menu/categories/:id",
-    "/api/admin/menu/items",
-    "/api/admin/menu/items/:id",
-    "/api/admin/reservations",
-    "/api/admin/reservations/:id",
-  ];
-  
-  adminRoutes.forEach(route => {
-    const routePath = route.replace(/:id/, '*');
-    app.use(routePath, isAuthenticated, isAdmin);
-  });
+  // Aplicamos os middleware de autenticação e autorização para todas as rotas administrativas
+  app.use("/api/admin", isAuthenticated);
+  app.use("/api/admin", isAdmin);
   
   // Gerenciamento de categorias
   app.get("/api/admin/menu/categories", async (req, res) => {
