@@ -57,12 +57,13 @@ export default function AdminMenu() {
       const file = e.target.files[0];
       setImageFile(file);
       
-      // Criar uma URL para o preview da imagem
+      // Criar uma URL para o preview da imagem somente (não será salva no banco)
       const fileURL = URL.createObjectURL(file);
       setImagePreview(fileURL);
       
-      // Atualizar o campo de imagem no formulário
-      form.setValue("image", fileURL);
+      // Não atualizar o campo de imagem no formulário, pois o upload
+      // vai acontecer antes de salvar no banco
+      // form.setValue("image", fileURL); // Esta linha causa o problema
     }
   };
   
