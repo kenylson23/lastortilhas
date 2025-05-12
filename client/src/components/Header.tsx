@@ -111,15 +111,27 @@ export default function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                <DropdownMenuLabel>Usuário administrador</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setLocation("/minhas-reservas")}
+                >
+                  Minhas Reservas
+                </DropdownMenuItem>
+                {user.role === "admin" && (
+                  <DropdownMenuItem
+                    onClick={() => setLocation("/admin")}
+                  >
+                    Painel Admin
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem 
                   onClick={() => logoutMutation.mutate()}
                   disabled={logoutMutation.isPending}
                   className="text-red-500 cursor-pointer"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  <span>Logout</span>
+                  <span>Sair</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -152,15 +164,27 @@ export default function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Olá, {user.username}</DropdownMenuLabel>
+                <DropdownMenuLabel>Usuário administrador</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setLocation("/minhas-reservas")}
+                >
+                  Minhas Reservas
+                </DropdownMenuItem>
+                {user.role === "admin" && (
+                  <DropdownMenuItem
+                    onClick={() => setLocation("/admin")}
+                  >
+                    Painel Admin
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem 
                   onClick={() => logoutMutation.mutate()}
                   disabled={logoutMutation.isPending}
                   className="text-red-500 cursor-pointer"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  <span>Logout</span>
+                  <span>Sair</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
