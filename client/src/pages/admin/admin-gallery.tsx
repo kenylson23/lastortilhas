@@ -86,6 +86,8 @@ export default function AdminGallery() {
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<GalleryItem | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadedThumbnail, setUploadedThumbnail] = useState<File | null>(null);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -523,19 +525,69 @@ export default function AdminGallery() {
                       <FormField
                         control={form.control}
                         name="src"
-                        render={({ field }) => (
+                        render={({ field: { value, onChange, ...field } }) => (
                           <FormItem>
-                            <FormLabel>URL {form.watch("type") === "image" ? "da Imagem" : "do Vídeo"}</FormLabel>
+                            <FormLabel>
+                              {form.watch("type") === "image" ? "Imagem" : "Vídeo"}
+                            </FormLabel>
                             <FormControl>
-                              <div className="flex">
-                                <Input 
-                                  placeholder={form.watch("type") === "image" 
-                                    ? "URL da imagem" 
-                                    : "URL do vídeo"}
-                                  {...field} 
-                                />
+                              <div className="space-y-2">
+                                <div className="flex space-x-2">
+                                  <Input 
+                                    placeholder={form.watch("type") === "image" 
+                                      ? "URL da imagem" 
+                                      : "URL do vídeo"}
+                                    value={value || ''}
+                                    onChange={onChange}
+                                    {...field} 
+                                  />
+                                  <span className="text-gray-400">ou</span>
+                                </div>
+                                
+                                <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 hover:border-primary transition-colors">
+                                  <Input
+                                    type="file"
+                                    accept={form.watch("type") === "image" 
+                                      ? "image/*" 
+                                      : "video/*"}
+                                    onChange={(e) => {
+                                      if (e.target.files && e.target.files[0]) {
+                                        // Converter o arquivo para uma URL de objeto
+                                        const fileURL = URL.createObjectURL(e.target.files[0]);
+                                        onChange(fileURL);
+                                        
+                                        // Salvar o arquivo para referência
+                                        setUploadedFile(e.target.files[0]);
+                                      }
+                                    }}
+                                    className="cursor-pointer"
+                                  />
+                                </div>
+                                
+                                {value && (
+                                  <div className="mt-2">
+                                    {form.watch("type") === "image" ? (
+                                      <img 
+                                        src={value} 
+                                        alt="Preview" 
+                                        className="max-h-40 rounded-md mx-auto" 
+                                      />
+                                    ) : (
+                                      <video 
+                                        src={value} 
+                                        controls 
+                                        className="max-h-40 w-full rounded-md" 
+                                      />
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             </FormControl>
+                            <FormDescription>
+                              {form.watch("type") === "image" 
+                                ? "Selecione uma imagem do seu dispositivo ou insira uma URL"
+                                : "Selecione um vídeo do seu dispositivo ou insira uma URL"}
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -545,21 +597,53 @@ export default function AdminGallery() {
                         <FormField
                           control={form.control}
                           name="thumbnail"
-                          render={({ field }) => (
+                          render={({ field: { value, onChange, onBlur, name, ref } }) => (
                             <FormItem>
-                              <FormLabel>URL da Miniatura (Thumbnail)</FormLabel>
+                              <FormLabel>Miniatura do Vídeo (Thumbnail)</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="URL da imagem de miniatura para o vídeo"
-                                  value={field.value || ''}
-                                  onChange={field.onChange}
-                                  onBlur={field.onBlur}
-                                  name={field.name}
-                                  ref={field.ref}
-                                />
+                                <div className="space-y-2">
+                                  <div className="flex space-x-2">
+                                    <Input 
+                                      placeholder="URL da imagem de miniatura"
+                                      value={value || ''}
+                                      onChange={onChange}
+                                      onBlur={onBlur}
+                                      name={name}
+                                      ref={ref}
+                                    />
+                                    <span className="text-gray-400">ou</span>
+                                  </div>
+                                  
+                                  <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 hover:border-primary transition-colors">
+                                    <Input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                          const fileURL = URL.createObjectURL(e.target.files[0]);
+                                          onChange(fileURL);
+                                          
+                                          // Salvar o arquivo para referência
+                                          setUploadedThumbnail(e.target.files[0]);
+                                        }
+                                      }}
+                                      className="cursor-pointer"
+                                    />
+                                  </div>
+                                  
+                                  {value && (
+                                    <div className="mt-2">
+                                      <img 
+                                        src={value} 
+                                        alt="Preview da miniatura" 
+                                        className="max-h-40 rounded-md mx-auto" 
+                                      />
+                                    </div>
+                                  )}
+                                </div>
                               </FormControl>
                               <FormDescription>
-                                Imagem que será exibida antes de reproduzir o vídeo
+                                Imagem que será exibida antes do vídeo ser reproduzido
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
