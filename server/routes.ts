@@ -20,6 +20,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/reservations", async (req, res) => {
     try {
       const validatedData = insertReservationSchema.parse(req.body);
+      
+      // Se o usuário estiver autenticado, associar a reserva a ele
+      if (req.isAuthenticated()) {
+        validatedData.user_id = req.user!.id;
+      }
+      
       const reservation = await storage.createReservation(validatedData);
       
       res.status(201).json({

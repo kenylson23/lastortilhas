@@ -178,4 +178,31 @@ export function setupAuth(app: Express) {
       data: userWithoutPassword
     });
   });
+  
+  // Rota para obter reservas do usuário logado
+  app.get("/api/my-reservations", (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({
+        status: "error",
+        message: "Não autenticado"
+      });
+    }
+    
+    const userId = req.user!.id;
+    
+    storage.getReservationsByUserId(userId)
+      .then(reservations => {
+        res.json({
+          status: "success",
+          data: reservations
+        });
+      })
+      .catch(error => {
+        console.error("Erro ao buscar reservas do usuário:", error);
+        res.status(500).json({
+          status: "error",
+          message: "Falha ao buscar suas reservas"
+        });
+      });
+  });
 }

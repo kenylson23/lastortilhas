@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import AuthPage from "@/pages/auth-page";
+import MyReservations from "@/pages/my-reservations";
 import AdminDashboard from "@/pages/admin/admin-dashboard";
 import AdminCategories from "@/pages/admin/admin-categories";
 import AdminMenu from "@/pages/admin/admin-menu";
@@ -20,6 +21,11 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/auth" component={AuthPage} />
+      
+      {/* Rotas de usuário - protegidas */}
+      <Route path="/minhas-reservas">
+        <ProtectedRoute path="/minhas-reservas" component={MyReservations} />
+      </Route>
       
       {/* Rotas administrativas - protegidas */}
       <Route path="/admin">
