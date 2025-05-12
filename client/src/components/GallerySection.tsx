@@ -1,65 +1,64 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaTimes } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Loader2 } from "lucide-react";
+import { getQueryFn } from "@/lib/queryClient";
 
 // Define tipos de mídia
 type MediaType = "image" | "video";
 
+// Interface para itens da galeria
 interface GalleryItem {
+  id: number;
+  title: string;
+  description?: string;
   src: string;
-  alt: string;
   type: MediaType;
-  thumbnail?: string; // Para vídeos, podemos ter uma miniatura
+  thumbnail?: string;
+  order: number;
+  active: boolean;
+  created_at?: string;
 }
 
-const galleryMedia: GalleryItem[] = [
+// Dados de fallback caso a API falhe
+const fallbackGalleryMedia: GalleryItem[] = [
   {
+    id: 1,
+    title: "Tacos variados",
     src: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    alt: "Tacos variados",
-    type: "image"
+    type: "image",
+    order: 0,
+    active: true
   },
   {
+    id: 2,
+    title: "Vídeo do restaurante Las Tortillas",
     src: "/videos/restaurante.mp4",
-    alt: "Vídeo do restaurante Las Tortillas",
     type: "video",
-    thumbnail: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    alt: "Nachos com guacamole",
-    type: "image"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1603824255842-53e13ffbb072?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    alt: "Decoração mexicana",
-    type: "image"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1574782561917-3aeb610a8211?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    alt: "Burritos",
-    type: "image"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1564767655658-4e6b365884b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    alt: "Cocktails mexicanos",
-    type: "image"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1579636849056-c3e0638ee00f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    alt: "Tamales tradicionais",
-    type: "image"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1617692855027-33b14f061079?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    alt: "Música ao vivo",
-    type: "image"
+    thumbnail: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+    order: 1,
+    active: true
   }
 ];
 
 export default function GallerySection() {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  
+  // Consulta para buscar itens da galeria
+  const { 
+    data: galleryData, 
+    isLoading, 
+    isError 
+  } = useQuery<{status: string, data: GalleryItem[]}>({
+    queryKey: ["/api/gallery"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
+  });
+
+  // Usar dados da API ou fallback se não houver dados
+  const galleryItems = galleryData?.data?.length ? galleryData.data : fallbackGalleryMedia;
 
   // Função para abrir o diálogo com o vídeo
   const openVideoDialog = (videoSrc: string) => {
@@ -106,7 +105,7 @@ export default function GallerySection() {
           </motion.div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {galleryMedia.map((item, index) => (
+            {galleryItems.map((item, index) => (
               <motion.div
                 key={index}
                 className="relative overflow-hidden rounded-lg h-40 md:h-60 group"
