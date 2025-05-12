@@ -104,45 +104,56 @@ export default function GallerySection() {
             </motion.p>
           </motion.div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {galleryItems.map((item, index) => (
-              <motion.div
-                key={index}
-                className="relative overflow-hidden rounded-lg h-40 md:h-60 group"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 * index }}
-                whileHover={{ scale: 1.05 }}
-              >
-                {item.type === "image" ? (
-                  // Renderiza imagem
-                  <img 
-                    src={item.src} 
-                    alt={item.alt} 
-                    className="w-full h-full object-cover transition-transform duration-500"
-                  />
-                ) : (
-                  // Renderiza vídeo com thumbnail e botão play
-                  <>
-                    <img
-                      src={item.thumbnail}
-                      alt={item.alt}
-                      className="w-full h-full object-cover"
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2 text-gray-600">Carregando galeria...</span>
+            </div>
+          ) : galleryItems.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Nenhum item na galeria disponível no momento.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {galleryItems.map((item, index) => (
+                <motion.div
+                  key={index}
+                  className="relative overflow-hidden rounded-lg h-40 md:h-60 group"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.1 * index }}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  {item.type === "image" ? (
+                    // Renderiza imagem
+                    <img 
+                      src={item.src} 
+                      alt={item.title || "Imagem da galeria"} 
+                      className="w-full h-full object-cover transition-transform duration-500"
                     />
-                    <div 
-                      className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                      onClick={() => openVideoDialog(item.src)}
-                    >
-                      <div className="bg-primary rounded-full p-3 text-white">
-                        <FaPlay />
+                  ) : (
+                    // Renderiza vídeo com thumbnail e botão play
+                    <>
+                      <img
+                        src={item.thumbnail}
+                        alt={item.title || "Vídeo da galeria"}
+                        className="w-full h-full object-cover"
+                      />
+                      <div 
+                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                        onClick={() => openVideoDialog(item.src)}
+                      >
+                        <div className="bg-primary rounded-full p-3 text-white">
+                          <FaPlay />
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
-              </motion.div>
-            ))}
-          </div>
+                    </>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
