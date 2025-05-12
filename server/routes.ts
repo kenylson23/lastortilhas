@@ -5,7 +5,8 @@ import {
   insertReservationSchema, 
   insertMenuCategorySchema, 
   insertMenuItemSchema,
-  insertGalleryItemSchema
+  insertGalleryItemSchema,
+  type InsertReservation
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { isAuthenticated, isAdmin } from "./middleware";
