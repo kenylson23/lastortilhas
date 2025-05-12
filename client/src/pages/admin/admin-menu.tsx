@@ -25,7 +25,9 @@ import { MenuItem, MenuCategory } from "@shared/schema";
 // Esquema do formulário de item de menu
 const menuItemFormSchema = z.object({
   name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres"),
+  type: z.string().default("food"),
   description: z.string().optional(),
+  short_description: z.string().default(""),
   price: z.coerce.number().min(0, "O preço não pode ser negativo"),
   image: z.string().optional(),
   category_id: z.number().min(1, "Selecione uma categoria"),
@@ -98,7 +100,9 @@ export default function AdminMenu() {
     resolver: zodResolver(menuItemFormSchema),
     defaultValues: {
       name: "",
+      type: "food",
       description: "",
+      short_description: "",
       price: 0,
       image: "",
       category_id: categories[0]?.id || 0,
@@ -201,14 +205,16 @@ export default function AdminMenu() {
     setEditingItem(item);
     form.reset({
       name: item.name,
+      type: item.type || "food",
       description: item.description || "",
+      short_description: item.short_description || "",
       price: item.price,
       image: item.image || "",
       category_id: item.category_id,
       spicy_level: item.spicy_level || 0,
       featured: !!item.featured,
-      vegetarian: !!item.vegetarian,
-      available: item.available === undefined ? true : !!item.available,
+      vegetarian: false, // Campo não existente no modelo, mas usado no frontend
+      available: true, // Campo não existente no modelo, mas usado no frontend
       order: item.order || 0
     });
   };
@@ -229,8 +235,8 @@ export default function AdminMenu() {
       // Criar um FormData para enviar o arquivo
       const formData = new FormData();
       
-      // Adicionar o arquivo de imagem
-      formData.append("image", imageFile);
+      // Adicionar o arquivo de imagem (o backend espera o nome do campo "file")
+      formData.append("file", imageFile);
       
       // Adicionar os outros dados do formulário
       Object.entries(data).forEach(([key, value]) => {
@@ -528,13 +534,54 @@ export default function AdminMenu() {
                           
                           <FormField
                             control={form.control}
+                            name="type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Tipo</FormLabel>
+                                <Select 
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  value={field.value}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Selecione o tipo" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="food">Comida</SelectItem>
+                                    <SelectItem value="drink">Bebida</SelectItem>
+                                    <SelectItem value="dessert">Sobremesa</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="short_description"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Descrição Curta</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Breve descrição para exibição nos cards" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
                             name="description"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Descrição</FormLabel>
+                                <FormLabel>Descrição Completa</FormLabel>
                                 <FormControl>
                                   <Textarea 
-                                    placeholder="Descrição do item" 
+                                    placeholder="Descrição detalhada do item" 
                                     className="min-h-[120px]"
                                     value={field.value || ''}
                                     onChange={field.onChange}
