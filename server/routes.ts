@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage as dbStorage } from "./storage";
 import { 
   insertReservationSchema, 
   insertMenuCategorySchema, 
@@ -16,8 +16,95 @@ import path from "path";
 import { randomUUID } from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configurar diretório de uploads
+  const uploadDir = path.resolve("public/uploads");
+  fs.ensureDirSync(uploadDir);
+  
+  // Configurar o armazenamento do multer
+  const multerStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      // Criar nome de arquivo único com UUID para evitar colisões
+      const uniqueId = randomUUID();
+      const ext = path.extname(file.originalname);
+      cb(null, `${uniqueId}${ext}`);
+    }
+  });
+  
+  // Configuração de limite de tamanho e tipos
+  const upload = multer({
+    storage: multerStorage,
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB
+    },
+    fileFilter: (req, file, cb) => {
+      // Aceitar apenas imagens e vídeos
+      const allowedTypes = [
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'video/mp4', 'video/webm'
+      ];
+      
+      if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error(`Tipo de arquivo não suportado: ${file.mimetype}`));
+      }
+    }
+  });
+  
   // Configurar autenticação
   setupAuth(app);
+
+  // Rota para upload de arquivos
+  app.post("/api/upload", isAuthenticated, isAdmin, upload.single("file"), (req, res) => {
+    try {
+      // Verificar se um arquivo foi enviado
+      if (!req.file) {
+        return res.status(400).json({
+          status: "error",
+          message: "Nenhum arquivo enviado"
+        });
+      }
+      
+      // Verificar o tipo de arquivo
+      const isImage = req.file.mimetype.startsWith('image/');
+      const isVideo = req.file.mimetype.startsWith('video/');
+      
+      if (!isImage && !isVideo) {
+        // Remover o arquivo enviado
+        fs.unlinkSync(req.file.path);
+        
+        return res.status(400).json({
+          status: "error",
+          message: "Tipo de arquivo não suportado"
+        });
+      }
+      
+      // Construir a URL pública do arquivo
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const relativePath = req.file.path.replace(/^public/, '');
+      const fileUrl = `${baseUrl}${relativePath}`;
+      
+      // Retornar a URL do arquivo
+      res.json({
+        status: "success",
+        data: {
+          url: fileUrl,
+          originalName: req.file.originalname,
+          mimetype: req.file.mimetype,
+          size: req.file.size
+        }
+      });
+    } catch (error: any) {
+      console.error("Erro no upload:", error);
+      res.status(500).json({
+        status: "error",
+        message: error.message || "Falha ao processar o upload do arquivo"
+      });
+    }
+  });
 
   // ===== ROTAS PÚBLICAS =====
   
@@ -31,7 +118,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         validatedData.user_id = req.user!.id;
       }
       
-      const reservation = await storage.createReservation(validatedData);
+      const reservation = await dbStorage.createReservation(validatedData);
       
       res.status(201).json({
         status: "success",
@@ -50,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Menu público
   app.get("/api/menu/categories", async (req, res) => {
     try {
-      const categories = await storage.getMenuCategories();
+      const categories = await dbStorage.getMenuCategories();
       res.json({
         status: "success",
         data: categories
@@ -65,7 +152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/menu/items", async (req, res) => {
     try {
-      const items = await storage.getMenuItems();
+      const items = await dbStorage.getMenuItems();
       res.json({
         status: "success",
         data: items
@@ -88,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const items = await storage.getMenuItemsByCategory(categoryId);
+      const items = await dbStorage.getMenuItemsByCategory(categoryId);
       res.json({
         status: "success",
         data: items
@@ -103,7 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/menu/featured", async (req, res) => {
     try {
-      const items = await storage.getFeaturedMenuItems();
+      const items = await dbStorage.getFeaturedMenuItems();
       res.json({
         status: "success",
         data: items
@@ -119,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Galeria pública
   app.get("/api/gallery", async (req, res) => {
     try {
-      const items = await storage.getActiveGalleryItems();
+      const items = await dbStorage.getActiveGalleryItems();
       res.json({
         status: "success",
         data: items
@@ -141,7 +228,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Gerenciamento de categorias
   app.get("/api/admin/menu/categories", async (req, res) => {
     try {
-      const categories = await storage.getMenuCategories();
+      const categories = await dbStorage.getMenuCategories();
       res.json({
         status: "success",
         data: categories
@@ -159,7 +246,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertMenuCategorySchema.parse(req.body);
       
       // Verificar se já existe uma categoria com o mesmo nome
-      const allCategories = await storage.getMenuCategories();
+      const allCategories = await dbStorage.getMenuCategories();
       const nameExists = allCategories.some(cat => cat.name === validatedData.name);
       
       if (nameExists) {
@@ -169,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const category = await storage.createMenuCategory(validatedData);
+      const category = await dbStorage.createMenuCategory(validatedData);
       
       res.status(201).json({
         status: "success",
@@ -193,7 +280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const existingCategory = await storage.getMenuCategory(id);
+      const existingCategory = await dbStorage.getMenuCategory(id);
       if (!existingCategory) {
         return res.status(404).json({
           status: "error",
@@ -204,7 +291,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verificar se o nome está sendo alterado e se já existe outro com o mesmo nome
       if (req.body.name && req.body.name !== existingCategory.name) {
         // Buscar todas as categorias para verificar se o nome já existe
-        const allCategories = await storage.getMenuCategories();
+        const allCategories = await dbStorage.getMenuCategories();
         const nameExists = allCategories.some(cat => 
           cat.id !== id && cat.name === req.body.name
         );
@@ -219,7 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Validar dados parciais
       const updateData = req.body;
-      const updatedCategory = await storage.updateMenuCategory(id, updateData);
+      const updatedCategory = await dbStorage.updateMenuCategory(id, updateData);
       
       res.json({
         status: "success",
@@ -243,7 +330,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const existingCategory = await storage.getMenuCategory(id);
+      const existingCategory = await dbStorage.getMenuCategory(id);
       if (!existingCategory) {
         return res.status(404).json({
           status: "error",
@@ -251,7 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const success = await storage.deleteMenuCategory(id);
+      const success = await dbStorage.deleteMenuCategory(id);
       if (!success) {
         return res.status(500).json({
           status: "error",
@@ -274,7 +361,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Gerenciamento de itens de menu
   app.get("/api/admin/menu/items", async (req, res) => {
     try {
-      const items = await storage.getMenuItems();
+      const items = await dbStorage.getMenuItems();
       res.json({
         status: "success",
         data: items
@@ -290,7 +377,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/menu/items", async (req, res) => {
     try {
       const validatedData = insertMenuItemSchema.parse(req.body);
-      const item = await storage.createMenuItem(validatedData);
+      const item = await dbStorage.createMenuItem(validatedData);
       
       res.status(201).json({
         status: "success",
@@ -314,7 +401,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const existingItem = await storage.getMenuItem(id);
+      const existingItem = await dbStorage.getMenuItem(id);
       if (!existingItem) {
         return res.status(404).json({
           status: "error",
@@ -324,7 +411,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Validar dados parciais
       const updateData = req.body;
-      const updatedItem = await storage.updateMenuItem(id, updateData);
+      const updatedItem = await dbStorage.updateMenuItem(id, updateData);
       
       res.json({
         status: "success",
@@ -348,7 +435,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const existingItem = await storage.getMenuItem(id);
+      const existingItem = await dbStorage.getMenuItem(id);
       if (!existingItem) {
         return res.status(404).json({
           status: "error",
@@ -356,7 +443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const success = await storage.deleteMenuItem(id);
+      const success = await dbStorage.deleteMenuItem(id);
       if (!success) {
         return res.status(500).json({
           status: "error",
@@ -379,7 +466,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Gerenciamento de reservas
   app.get("/api/admin/reservations", async (req, res) => {
     try {
-      const reservations = await storage.getReservations();
+      const reservations = await dbStorage.getReservations();
       res.json({
         status: "success",
         data: reservations
@@ -410,7 +497,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const existingReservation = await storage.getReservation(id);
+      const existingReservation = await dbStorage.getReservation(id);
       if (!existingReservation) {
         return res.status(404).json({
           status: "error",
@@ -418,7 +505,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const updatedReservation = await storage.updateReservationStatus(id, status);
+      const updatedReservation = await dbStorage.updateReservationStatus(id, status);
       
       res.json({
         status: "success",
@@ -443,7 +530,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const existingReservation = await storage.getReservation(id);
+      const existingReservation = await dbStorage.getReservation(id);
       if (!existingReservation) {
         return res.status(404).json({
           status: "error",
@@ -463,7 +550,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (guests !== undefined) updateData.guests = guests;
       if (message !== undefined) updateData.message = message;
       
-      const updatedReservation = await storage.updateReservation(id, updateData);
+      const updatedReservation = await dbStorage.updateReservation(id, updateData);
       
       res.json({
         status: "success",
@@ -480,7 +567,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Gerenciamento de galeria
   app.get("/api/admin/gallery", async (req, res) => {
     try {
-      const items = await storage.getGalleryItems();
+      const items = await dbStorage.getGalleryItems();
       res.json({
         status: "success",
         data: items
@@ -496,7 +583,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/gallery", async (req, res) => {
     try {
       const validatedData = insertGalleryItemSchema.parse(req.body);
-      const item = await storage.createGalleryItem(validatedData);
+      const item = await dbStorage.createGalleryItem(validatedData);
       
       res.status(201).json({
         status: "success",
@@ -520,7 +607,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const existingItem = await storage.getGalleryItem(id);
+      const existingItem = await dbStorage.getGalleryItem(id);
       if (!existingItem) {
         return res.status(404).json({
           status: "error",
@@ -530,7 +617,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Validar dados parciais
       const updateData = req.body;
-      const updatedItem = await storage.updateGalleryItem(id, updateData);
+      const updatedItem = await dbStorage.updateGalleryItem(id, updateData);
       
       res.json({
         status: "success",
@@ -554,7 +641,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const existingItem = await storage.getGalleryItem(id);
+      const existingItem = await dbStorage.getGalleryItem(id);
       if (!existingItem) {
         return res.status(404).json({
           status: "error",
@@ -562,7 +649,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const success = await storage.deleteGalleryItem(id);
+      const success = await dbStorage.deleteGalleryItem(id);
       if (!success) {
         return res.status(500).json({
           status: "error",
