@@ -2,40 +2,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaPepperHot, FaStar, FaFire } from "react-icons/fa";
 import { MexicanButton } from "./ui/button-variant";
-import { Loader2 } from "lucide-react";
+import { Loader2, Settings } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 import { MenuItem } from "@shared/schema";
-
-// Itens de fallback para quando não houverem dados do servidor
-const fallbackMenuItems: MenuItem[] = [
-  {
-    id: 1,
-    name: "Tacos al Pastor",
-    type: "Main",
-    description: "Tortillas de milho com carne de porco marinada, abacaxi, coentro e cebola",
-    short_description: "Autênticos tacos mexicanos com carne marinada",
-    price: 3500,
-    spicy_level: 3,
-    image: "https://images.unsplash.com/photo-1613514785940-daed07799d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    featured: true,
-    category_id: 1,
-    order: 0
-  },
-  {
-    id: 2,
-    name: "Guacamole Fresco",
-    type: "Starter",
-    description: "Abacate fresco amassado com tomate, cebola, coentro, limão e pimenta jalapeño",
-    short_description: "Preparado na mesa para garantir frescor",
-    price: 2800,
-    spicy_level: 2,
-    image: "https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    featured: true,
-    category_id: 2,
-    order: 0
-  }
-];
+import { useAuth } from "@/hooks/use-auth";
+import { Link } from "wouter";
 
 type FilterButton = {
   label: string;
@@ -52,6 +24,7 @@ const filterButtons: FilterButton[] = [
 
 export default function MenuSection() {
   const [activeFilter, setActiveFilter] = useState<string>("All");
+  const { user } = useAuth();
   
   // Consulta para buscar itens do menu
   const { 
@@ -63,12 +36,14 @@ export default function MenuSection() {
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 
-  // Usar dados da API ou fallback se não houver dados
-  const menuItems = menuItemsData?.data?.length ? menuItemsData.data : fallbackMenuItems;
+  // Usar apenas dados da API
+  const menuItems = menuItemsData?.data || [];
   
   const filteredItems = activeFilter === "All" 
     ? menuItems 
-    : menuItems.filter(item => item.type === activeFilter);
+    : menuItems.filter((item: MenuItem) => item.type === activeFilter);
+    
+  const isAdmin = user?.role === "admin";
   
   return (
     <section id="menu" className="py-20 bg-gray-50">
