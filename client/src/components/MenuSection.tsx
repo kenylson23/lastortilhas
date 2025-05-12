@@ -5,7 +5,7 @@ import { MexicanButton } from "./ui/button-variant";
 import { Loader2, Settings } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
-import { MenuItem } from "@shared/schema";
+import { MenuItem, MenuCategory } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 
@@ -14,22 +14,23 @@ type FilterButton = {
   value: string;
 };
 
-const filterButtons: FilterButton[] = [
-  { label: "Todos", value: "All" },
-  { label: "Entradas", value: "Starter" },
-  { label: "Pratos Principais", value: "Main" },
-  { label: "Sobremesas", value: "Dessert" },
-  { label: "Bebidas", value: "Drink" }
-];
-
 export default function MenuSection() {
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const { user } = useAuth();
   
+  // Consulta para buscar categorias do menu
+  const {
+    data: categoriesData,
+    isLoading: isCategoriesLoading
+  } = useQuery<{status: string, data: MenuCategory[]}>({
+    queryKey: ["/api/menu/categories"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
+  });
+  
   // Consulta para buscar itens do menu
   const { 
     data: menuItemsData, 
-    isLoading, 
+    isLoading: isMenuItemsLoading, 
     isError 
   } = useQuery<{status: string, data: MenuItem[]}>({
     queryKey: ["/api/menu/items"],
@@ -37,11 +38,21 @@ export default function MenuSection() {
   });
 
   // Usar apenas dados da API
+  const categories = categoriesData?.data || [];
   const menuItems = menuItemsData?.data || [];
+  
+  // Criar buttons para filtro dinâmico baseado nas categorias
+  const filterButtons: FilterButton[] = [
+    { label: "Todos", value: "All" },
+    ...categories.map(category => ({
+      label: category.name,
+      value: category.id.toString()
+    }))
+  ];
   
   const filteredItems = activeFilter === "All" 
     ? menuItems 
-    : menuItems.filter((item: MenuItem) => item.type === activeFilter);
+    : menuItems.filter((item: MenuItem) => item.category_id.toString() === activeFilter);
     
   const isAdmin = user?.role === "admin";
   
@@ -111,11 +122,11 @@ export default function MenuSection() {
           </div>
         </motion.div>
         
-        {isLoading ? (
+        {isMenuItemsLoading || isCategoriesLoading ? (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
           </div>
-        ) : isError ? (
+        ) : isError || !menuItems ? (
           <div className="text-center py-10">
             <p className="text-red-500">Erro ao carregar o menu. Por favor, tente novamente mais tarde.</p>
           </div>
