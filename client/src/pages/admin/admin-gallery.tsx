@@ -91,6 +91,7 @@ export default function AdminGallery() {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [uploadedThumbnail, setUploadedThumbnail] = useState<File | null>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
   
@@ -198,13 +199,13 @@ export default function AdminGallery() {
       const file = e.target.files[0];
       setMediaFile(file);
       
-      // Criar uma URL temporária para visualização
+      // Criar uma URL temporária para visualização somente
       const objectUrl = URL.createObjectURL(file);
       setMediaPreview(objectUrl);
       
-      // Atualizar o formulário
-      const fieldType = form.getValues("type");
-      form.setValue("src", objectUrl);
+      // Não atualizar o formulário com uma URL temporária
+      // O valor real será definido após o upload
+      // form.setValue("src", objectUrl); // Remove esta linha para evitar URLs blob
     }
   };
   
@@ -213,12 +214,13 @@ export default function AdminGallery() {
       const file = e.target.files[0];
       setThumbnailFile(file);
       
-      // Criar uma URL temporária para visualização
+      // Criar uma URL temporária para visualização somente
       const objectUrl = URL.createObjectURL(file);
       setThumbnailPreview(objectUrl);
       
-      // Atualizar o formulário
-      form.setValue("thumbnail", objectUrl);
+      // Não atualizar o formulário com URL temporária
+      // O valor real será definido após o upload
+      // form.setValue("thumbnail", objectUrl); // Remove esta linha para evitar URLs blob
     }
   };
   
