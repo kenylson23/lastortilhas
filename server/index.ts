@@ -6,6 +6,7 @@ import { setupVite, serveStatic, log } from "./vite";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 app.use('/videos', express.static(path.join(process.cwd(), 'public/videos')));
 
 app.use((req, res, next) => {

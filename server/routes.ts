@@ -84,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Construir a URL pública do arquivo
       const baseUrl = `${req.protocol}://${req.get('host')}`;
-      const relativePath = req.file.path.replace(/^public/, '');
+      const relativePath = '/uploads/' + path.basename(req.file.path);
       const fileUrl = `${baseUrl}${relativePath}`;
       
       // Retornar a URL do arquivo
