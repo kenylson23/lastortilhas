@@ -33,8 +33,6 @@ const menuItemFormSchema = z.object({
   category_id: z.number().min(1, "Selecione uma categoria"),
   spicy_level: z.coerce.number().min(0).max(5),
   featured: z.boolean().default(false),
-  vegetarian: z.boolean().default(false),
-  available: z.boolean().default(true),
   order: z.coerce.number().min(0)
 });
 
@@ -109,8 +107,6 @@ export default function AdminMenu() {
       category_id: categories[0]?.id || 0,
       spicy_level: 0,
       featured: false,
-      vegetarian: false,
-      available: true,
       order: 0
     }
   });
@@ -190,14 +186,14 @@ export default function AdminMenu() {
     setIsCreating(true);
     form.reset({
       name: "",
+      type: "food",
       description: "",
+      short_description: "",
       price: 0,
       image: "",
       category_id: categories[0]?.id || 0,
       spicy_level: 0,
       featured: false,
-      vegetarian: false,
-      available: true,
       order: menuItems.filter(i => i.category_id === categories[0]?.id).length
     });
   };
@@ -214,8 +210,6 @@ export default function AdminMenu() {
       category_id: item.category_id,
       spicy_level: item.spicy_level || 0,
       featured: !!item.featured,
-      vegetarian: false, // Campo não existente no modelo, mas usado no frontend
-      available: true, // Campo não existente no modelo, mas usado no frontend
       order: item.order || 0
     });
   };
@@ -444,11 +438,6 @@ export default function AdminMenu() {
                                         <Star className="h-4 w-4 ml-1 text-yellow-500 fill-yellow-500" />
                                       )}
                                     </div>
-                                    {item.vegetarian && (
-                                      <Badge variant="outline" className="bg-green-100 text-green-800 mt-1">
-                                        Vegetariano
-                                      </Badge>
-                                    )}
                                   </div>
                                 </div>
                               </TableCell>
@@ -463,13 +452,9 @@ export default function AdminMenu() {
                               <TableCell>
                                 <Badge 
                                   variant="outline" 
-                                  className={
-                                    item.available 
-                                      ? "bg-green-100 text-green-800" 
-                                      : "bg-red-100 text-red-800"
-                                  }
+                                  className="bg-green-100 text-green-800"
                                 >
-                                  {item.available ? "Disponível" : "Indisponível"}
+                                  Disponível
                                 </Badge>
                               </TableCell>
                               <TableCell>
