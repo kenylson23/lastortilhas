@@ -20,6 +20,7 @@ export interface IStorage {
   createReservation(reservation: InsertReservation): Promise<Reservation>;
   getReservations(): Promise<Reservation[]>;
   getReservation(id: number): Promise<Reservation | undefined>;
+  getReservationsByUserId(userId: number): Promise<Reservation[]>;
   updateReservationStatus(id: number, status: string): Promise<Reservation | undefined>;
   
   // Categorias de menu
@@ -93,6 +94,13 @@ export class DatabaseStorage implements IStorage {
   async getReservation(id: number): Promise<Reservation | undefined> {
     const result = await db.select().from(reservations).where(eq(reservations.id, id));
     return result[0];
+  }
+  
+  async getReservationsByUserId(userId: number): Promise<Reservation[]> {
+    return await db.select()
+      .from(reservations)
+      .where(eq(reservations.user_id, userId))
+      .orderBy(desc(reservations.created_at));
   }
   
   async updateReservationStatus(id: number, status: string): Promise<Reservation | undefined> {

@@ -26,6 +26,7 @@ export const reservations = pgTable("reservations", {
   guests: text("guests").notNull(),
   message: text("message"),
   status: text("status").default("pendente"), // pendente, confirmada, cancelada
+  user_id: integer("user_id").references(() => users.id),
   created_at: timestamp("created_at").defaultNow(),
 });
 
@@ -36,6 +37,9 @@ export const insertReservationSchema = createInsertSchema(reservations).pick({
   time: true,
   guests: true,
   message: true,
+  user_id: true,
+}).extend({
+  user_id: z.number().optional(),
 });
 
 // Tabela para categorias de menu
