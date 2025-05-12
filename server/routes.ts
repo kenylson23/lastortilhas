@@ -427,6 +427,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Rota para atualizar detalhes da reserva
+  app.put("/api/admin/reservations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({
+          status: "error",
+          message: "ID de reserva inválido"
+        });
+      }
+      
+      const existingReservation = await storage.getReservation(id);
+      if (!existingReservation) {
+        return res.status(404).json({
+          status: "error",
+          message: "Reserva não encontrada"
+        });
+      }
+      
+      // Extrair apenas os campos que podem ser atualizados
+      const { name, phone, date, time, guests, message } = req.body;
+      const updateData: Partial<InsertReservation> = {};
+      
+      // Adicionar apenas os campos que estão presentes no request
+      if (name !== undefined) updateData.name = name;
+      if (phone !== undefined) updateData.phone = phone;
+      if (date !== undefined) updateData.date = date;
+      if (time !== undefined) updateData.time = time;
+      if (guests !== undefined) updateData.guests = guests;
+      if (message !== undefined) updateData.message = message;
+      
+      const updatedReservation = await storage.updateReservation(id, updateData);
+      
+      res.json({
+        status: "success",
+        data: updatedReservation
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        status: "error",
+        message: error.message || "Falha ao atualizar detalhes da reserva"
+      });
+    }
+  });
+  
   // Gerenciamento de galeria
   app.get("/api/admin/gallery", async (req, res) => {
     try {
