@@ -810,48 +810,6 @@ export default function AdminMenu() {
                                   </FormItem>
                                 )}
                               />
-                              
-                              <FormField
-                                control={form.control}
-                                name="vegetarian"
-                                render={({ field }) => (
-                                  <FormItem className="flex items-center justify-between space-x-2 rounded-md border p-3">
-                                    <div>
-                                      <FormLabel className="font-normal">Vegetariano</FormLabel>
-                                      <FormDescription>
-                                        Este item é vegetariano
-                                      </FormDescription>
-                                    </div>
-                                    <FormControl>
-                                      <Switch
-                                        checked={!!field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={form.control}
-                                name="available"
-                                render={({ field }) => (
-                                  <FormItem className="flex items-center justify-between space-x-2 rounded-md border p-3">
-                                    <div>
-                                      <FormLabel className="font-normal">Disponível</FormLabel>
-                                      <FormDescription>
-                                        Este item está disponível no menu
-                                      </FormDescription>
-                                    </div>
-                                    <FormControl>
-                                      <Switch
-                                        checked={!!field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
                             </div>
                           </div>
                         </div>
