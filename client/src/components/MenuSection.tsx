@@ -146,8 +146,8 @@ export default function MenuSection() {
                   <div className="flex justify-between items-center mt-3">
                     <span className="font-bold text-primary">{item.price} Kz</span>
                     <span className="text-accent">
-                      {item.spicy_level > 0 ? (
-                        Array(item.spicy_level).fill(0).map((_, i) => (
+                      {(item.spicy_level || 0) > 0 ? (
+                        Array(item.spicy_level || 0).fill(0).map((_, i) => (
                           <FaFire key={i} className="inline-block ml-1" />
                         ))
                       ) : (
@@ -162,7 +162,7 @@ export default function MenuSection() {
         )}
         
         <motion.div 
-          className="text-center mt-12"
+          className="text-center mt-12 flex flex-col items-center gap-4"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -171,6 +171,18 @@ export default function MenuSection() {
           <MexicanButton variant="secondary" size="lg">
             Ver Menu Completo
           </MexicanButton>
+          
+          {isAdmin && (
+            <Link to="/admin/menu">
+              <motion.button 
+                className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+                whileHover={{ scale: 1.05 }}
+              >
+                <Settings size={16} />
+                <span>Gerenciar Menu no Painel Admin</span>
+              </motion.button>
+            </Link>
+          )}
         </motion.div>
       </div>
     </section>
