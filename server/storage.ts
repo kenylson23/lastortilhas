@@ -1,9 +1,10 @@
 import { 
-  users, reservations, menuCategories, menuItems,
+  users, reservations, menuCategories, menuItems, galleryItems,
   type User, type InsertUser, 
   type InsertReservation, type Reservation,
   type InsertMenuCategory, type MenuCategory,
-  type InsertMenuItem, type MenuItem
+  type InsertMenuItem, type MenuItem,
+  type InsertGalleryItem, type GalleryItem
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, asc, desc } from "drizzle-orm";
@@ -36,6 +37,14 @@ export interface IStorage {
   updateMenuItem(id: number, item: Partial<InsertMenuItem>): Promise<MenuItem | undefined>;
   deleteMenuItem(id: number): Promise<boolean>;
   getFeaturedMenuItems(): Promise<MenuItem[]>;
+  
+  // Galeria
+  getGalleryItems(): Promise<GalleryItem[]>;
+  getGalleryItem(id: number): Promise<GalleryItem | undefined>;
+  createGalleryItem(item: InsertGalleryItem): Promise<GalleryItem>;
+  updateGalleryItem(id: number, item: Partial<InsertGalleryItem>): Promise<GalleryItem | undefined>;
+  deleteGalleryItem(id: number): Promise<boolean>;
+  getActiveGalleryItems(): Promise<GalleryItem[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -174,6 +183,54 @@ export class DatabaseStorage implements IStorage {
       .from(menuItems)
       .where(eq(menuItems.featured, true))
       .orderBy(asc(menuItems.category_id), asc(menuItems.order));
+  }
+
+  // === GALERIA ===
+  
+  async getGalleryItems(): Promise<GalleryItem[]> {
+    return await db.select()
+      .from(galleryItems)
+      .orderBy(asc(galleryItems.order));
+  }
+  
+  async getGalleryItem(id: number): Promise<GalleryItem | undefined> {
+    const [item] = await db.select()
+      .from(galleryItems)
+      .where(eq(galleryItems.id, id));
+    
+    return item;
+  }
+  
+  async createGalleryItem(item: InsertGalleryItem): Promise<GalleryItem> {
+    const [newItem] = await db.insert(galleryItems)
+      .values(item)
+      .returning();
+    
+    return newItem;
+  }
+  
+  async updateGalleryItem(id: number, item: Partial<InsertGalleryItem>): Promise<GalleryItem | undefined> {
+    const [updatedItem] = await db.update(galleryItems)
+      .set(item)
+      .where(eq(galleryItems.id, id))
+      .returning();
+    
+    return updatedItem;
+  }
+  
+  async deleteGalleryItem(id: number): Promise<boolean> {
+    const [deletedItem] = await db.delete(galleryItems)
+      .where(eq(galleryItems.id, id))
+      .returning();
+    
+    return !!deletedItem;
+  }
+  
+  async getActiveGalleryItems(): Promise<GalleryItem[]> {
+    return await db.select()
+      .from(galleryItems)
+      .where(eq(galleryItems.active, true))
+      .orderBy(asc(galleryItems.order));
   }
 }
 

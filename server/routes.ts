@@ -4,7 +4,8 @@ import { storage } from "./storage";
 import { 
   insertReservationSchema, 
   insertMenuCategorySchema, 
-  insertMenuItemSchema
+  insertMenuItemSchema,
+  insertGalleryItemSchema
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { isAuthenticated, isAdmin } from "./middleware";

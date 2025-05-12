@@ -81,6 +81,29 @@ export const insertMenuItemSchema = createInsertSchema(menuItems).pick({
   order: true,
 });
 
+// Tabela para galeria
+export const galleryItems = pgTable("gallery_items", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  src: text("src").notNull(),
+  thumbnail: text("thumbnail"),
+  type: text("type").notNull().default("image"), // image ou video
+  order: integer("order").default(0),
+  active: boolean("active").default(true),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const insertGalleryItemSchema = createInsertSchema(galleryItems).pick({
+  title: true,
+  description: true,
+  src: true,
+  thumbnail: true,
+  type: true,
+  order: true,
+  active: true,
+});
+
 // Tipos
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -93,3 +116,6 @@ export type MenuCategory = typeof menuCategories.$inferSelect;
 
 export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
 export type MenuItem = typeof menuItems.$inferSelect;
+
+export type InsertGalleryItem = z.infer<typeof insertGalleryItemSchema>;
+export type GalleryItem = typeof galleryItems.$inferSelect;
