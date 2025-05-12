@@ -20,7 +20,9 @@ import { getQueryFn } from "@/lib/queryClient";
 import { Reservation } from "@shared/schema";
 
 // Função para determinar a cor do status
-const getStatusColorClass = (status: string) => {
+const getStatusColorClass = (status: string | null) => {
+  if (!status) return "bg-yellow-100 text-yellow-800 border-yellow-200";
+  
   switch (status) {
     case "confirmada":
       return "bg-green-100 text-green-800 border-green-200";
@@ -32,7 +34,9 @@ const getStatusColorClass = (status: string) => {
 };
 
 // Função para obter o ícone do status
-const StatusIcon = ({ status }: { status: string }) => {
+const StatusIcon = ({ status }: { status: string | null }) => {
+  if (!status) return <Clock3 size={16} className="text-yellow-600" />;
+  
   switch (status) {
     case "confirmada":
       return <Check size={16} className="text-green-600" />;
@@ -144,7 +148,7 @@ export default function MyReservations() {
                           className={getStatusColorClass(reservation.status)}
                         >
                           <StatusIcon status={reservation.status} />
-                          <span className="ml-1">{reservation.status}</span>
+                          <span className="ml-1">{reservation.status || "pendente"}</span>
                         </Badge>
                       </div>
                     </CardHeader>
@@ -162,7 +166,7 @@ export default function MyReservations() {
                           <Users className="h-4 w-4 mr-2 text-gray-500" />
                           <span>{reservation.guests} pessoas</span>
                         </div>
-                        {reservation.message && (
+                        {reservation.message && reservation.message !== null && (
                           <div className="flex items-start">
                             <MessageSquare className="h-4 w-4 mr-2 mt-1 text-gray-500" />
                             <span className="text-sm">{reservation.message}</span>
