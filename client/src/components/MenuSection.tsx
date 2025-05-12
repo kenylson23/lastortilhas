@@ -2,85 +2,38 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaPepperHot, FaStar, FaFire } from "react-icons/fa";
 import { MexicanButton } from "./ui/button-variant";
+import { Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
+import { MenuItem } from "@shared/schema";
 
-type MenuItem = {
-  id: number;
-  name: string;
-  type: string;
-  description: string;
-  shortDescription: string;
-  price: number;
-  spicyLevel: number;
-  image: string;
-  featured: boolean;
-};
-
-const menuItems: MenuItem[] = [
+// Itens de fallback para quando não houverem dados do servidor
+const fallbackMenuItems: MenuItem[] = [
   {
     id: 1,
     name: "Tacos al Pastor",
     type: "Main",
     description: "Tortillas de milho com carne de porco marinada, abacaxi, coentro e cebola",
-    shortDescription: "Autênticos tacos mexicanos com carne marinada",
+    short_description: "Autênticos tacos mexicanos com carne marinada",
     price: 3500,
-    spicyLevel: 3,
+    spicy_level: 3,
     image: "https://images.unsplash.com/photo-1613514785940-daed07799d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    featured: true
+    featured: true,
+    category_id: 1,
+    order: 0
   },
   {
     id: 2,
     name: "Guacamole Fresco",
     type: "Starter",
     description: "Abacate fresco amassado com tomate, cebola, coentro, limão e pimenta jalapeño",
-    shortDescription: "Preparado na mesa para garantir frescor",
+    short_description: "Preparado na mesa para garantir frescor",
     price: 2800,
-    spicyLevel: 2,
+    spicy_level: 2,
     image: "https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    featured: true
-  },
-  {
-    id: 3,
-    name: "Enchiladas de Frango",
-    type: "Main",
-    description: "Tortillas recheadas com frango desfiado, cobertas com molho de pimenta vermelha e queijo",
-    shortDescription: "Servidas com arroz mexicano e feijão",
-    price: 4200,
-    spicyLevel: 3,
-    image: "https://images.unsplash.com/photo-1626740793551-a746bc21f61e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    featured: true
-  },
-  {
-    id: 4,
-    name: "Quesadillas de Queijo",
-    type: "Starter",
-    description: "Tortillas de trigo com recheio de queijo derretido, servidas com guacamole e creme azedo",
-    shortDescription: "Perfeito para compartilhar",
-    price: 3100,
-    spicyLevel: 1,
-    image: "https://images.unsplash.com/photo-1464219222984-216ebffaaf85?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    featured: true
-  },
-  {
-    id: 5,
-    name: "Churros con Chocolate",
-    type: "Dessert",
-    description: "Churros frescos e crocantes polvilhados com açúcar e canela, servidos com molho de chocolate",
-    shortDescription: "Sobremesa tradicional mexicana",
-    price: 2500,
-    spicyLevel: 0,
-    image: "https://images.unsplash.com/photo-1632852506474-4f6d30ca0d54?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    featured: true
-  },
-  {
-    id: 6,
-    name: "Margarita Clássica",
-    type: "Drink",
-    description: "Cocktail tradicional mexicano preparado com tequila, licor de laranja e suco de limão",
-    shortDescription: "Também disponível em versão sem álcool",
-    price: 1900,
-    spicyLevel: 0,
-    image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
-    featured: true
+    featured: true,
+    category_id: 2,
+    order: 0
   }
 ];
 
@@ -99,6 +52,19 @@ const filterButtons: FilterButton[] = [
 
 export default function MenuSection() {
   const [activeFilter, setActiveFilter] = useState<string>("All");
+  
+  // Consulta para buscar itens do menu
+  const { 
+    data: menuItemsData, 
+    isLoading, 
+    isError 
+  } = useQuery<{status: string, data: MenuItem[]}>({
+    queryKey: ["/api/menu/items"],
+    queryFn: getQueryFn({ on401: "returnNull" }),
+  });
+
+  // Usar dados da API ou fallback se não houver dados
+  const menuItems = menuItemsData?.data?.length ? menuItemsData.data : fallbackMenuItems;
   
   const filteredItems = activeFilter === "All" 
     ? menuItems 
@@ -170,45 +136,55 @@ export default function MenuSection() {
           </div>
         </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredItems.map((item, index) => (
-            <motion.div
-              key={item.id}
-              className="menu-item group relative rounded-xl overflow-hidden shadow-lg hover-scale"
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 + (index * 0.1) }}
-            >
-              <img 
-                src={item.image} 
-                alt={item.name} 
-                className="w-full h-60 object-cover"
-              />
-              <div className="menu-overlay absolute inset-0 bg-primary bg-opacity-0 group-hover:bg-opacity-80 flex flex-col justify-center items-center p-6">
-                <h4 className="text-white font-playfair text-2xl font-bold mb-2">{item.name}</h4>
-                <p className="text-white text-center">{item.description}</p>
-                <p className="text-white font-bold mt-3">{item.price} Kz</p>
-              </div>
-              <div className="p-4 bg-white">
-                <h4 className="font-playfair text-xl font-bold text-secondary">{item.name}</h4>
-                <p className="text-sm text-gray-600 mt-1">{item.shortDescription}</p>
-                <div className="flex justify-between items-center mt-3">
-                  <span className="font-bold text-primary">{item.price} Kz</span>
-                  <span className="text-accent">
-                    {item.spicyLevel > 0 ? (
-                      Array(item.spicyLevel).fill(0).map((_, i) => (
-                        <FaFire key={i} className="inline-block ml-1" />
-                      ))
-                    ) : (
-                      <FaStar className="inline-block" />
-                    )}
-                  </span>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          </div>
+        ) : isError ? (
+          <div className="text-center py-10">
+            <p className="text-red-500">Erro ao carregar o menu. Por favor, tente novamente mais tarde.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredItems.map((item, index) => (
+              <motion.div
+                key={item.id}
+                className="menu-item group relative rounded-xl overflow-hidden shadow-lg hover-scale"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 + (index * 0.1) }}
+              >
+                <img 
+                  src={item.image} 
+                  alt={item.name} 
+                  className="w-full h-60 object-cover"
+                />
+                <div className="menu-overlay absolute inset-0 bg-primary bg-opacity-0 group-hover:bg-opacity-80 flex flex-col justify-center items-center p-6">
+                  <h4 className="text-white font-playfair text-2xl font-bold mb-2">{item.name}</h4>
+                  <p className="text-white text-center">{item.description}</p>
+                  <p className="text-white font-bold mt-3">{item.price} Kz</p>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                <div className="p-4 bg-white">
+                  <h4 className="font-playfair text-xl font-bold text-secondary">{item.name}</h4>
+                  <p className="text-sm text-gray-600 mt-1">{item.short_description}</p>
+                  <div className="flex justify-between items-center mt-3">
+                    <span className="font-bold text-primary">{item.price} Kz</span>
+                    <span className="text-accent">
+                      {item.spicy_level > 0 ? (
+                        Array(item.spicy_level).fill(0).map((_, i) => (
+                          <FaFire key={i} className="inline-block ml-1" />
+                        ))
+                      ) : (
+                        <FaStar className="inline-block" />
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
         
         <motion.div 
           className="text-center mt-12"
