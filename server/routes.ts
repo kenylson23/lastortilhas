@@ -10,6 +10,10 @@ import {
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { isAuthenticated, isAdmin } from "./middleware";
+import multer from "multer";
+import fs from "fs-extra";
+import path from "path";
+import { randomUUID } from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configurar autenticação
