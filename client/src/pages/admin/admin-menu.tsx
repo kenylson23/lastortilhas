@@ -49,6 +49,21 @@ export default function AdminMenu() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   
+  // Função para lidar com a seleção de imagens
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      
+      // Criar uma URL para o preview da imagem
+      const fileURL = URL.createObjectURL(file);
+      setImagePreview(fileURL);
+      
+      // Atualizar o campo de imagem no formulário
+      form.setValue("image", fileURL);
+    }
+  };
+  
   const [__, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -209,11 +224,93 @@ export default function AdminMenu() {
   };
   
   const onSubmit = (data: z.infer<typeof menuItemFormSchema>) => {
-    if (editingItem) {
-      updateItemMutation.mutate({ id: editingItem.id, data });
+    // Se tivermos um arquivo de imagem, precisamos carregar de forma diferente
+    if (imageFile) {
+      // Criar um FormData para enviar o arquivo
+      const formData = new FormData();
+      
+      // Adicionar o arquivo de imagem
+      formData.append("image", imageFile);
+      
+      // Adicionar os outros dados do formulário
+      Object.entries(data).forEach(([key, value]) => {
+        if (key !== "image") { // Não adicionar a URL da imagem
+          formData.append(key, String(value));
+        }
+      });
+      
+      // Fazer o upload e criar/atualizar o item
+      if (editingItem) {
+        // Para atualização, fazemos upload primeiro e depois atualizamos o item
+        fetch("/api/upload", {
+          method: "POST",
+          body: formData
+        })
+        .then(res => res.json())
+        .then(uploadResult => {
+          if (uploadResult.status === "success") {
+            // Atualiza o item com a nova URL da imagem
+            updateItemMutation.mutate({ 
+              id: editingItem.id, 
+              data: { ...data, image: uploadResult.data.url }
+            });
+          } else {
+            toast({
+              title: "Erro no upload",
+              description: uploadResult.message || "Não foi possível carregar a imagem",
+              variant: "destructive"
+            });
+          }
+        })
+        .catch(error => {
+          toast({
+            title: "Erro no upload",
+            description: error.message,
+            variant: "destructive"
+          });
+        });
+      } else {
+        // Para criação, fazemos upload primeiro e depois criamos o item
+        fetch("/api/upload", {
+          method: "POST",
+          body: formData
+        })
+        .then(res => res.json())
+        .then(uploadResult => {
+          if (uploadResult.status === "success") {
+            // Criar item com a URL da imagem
+            createItemMutation.mutate({ 
+              ...data, 
+              image: uploadResult.data.url 
+            });
+          } else {
+            toast({
+              title: "Erro no upload",
+              description: uploadResult.message || "Não foi possível carregar a imagem",
+              variant: "destructive"
+            });
+          }
+        })
+        .catch(error => {
+          toast({
+            title: "Erro no upload",
+            description: error.message,
+            variant: "destructive"
+          });
+        });
+      }
     } else {
-      createItemMutation.mutate(data);
+      // Se não tivermos arquivo, apenas criar/atualizar o item normalmente
+      if (editingItem) {
+        updateItemMutation.mutate({ id: editingItem.id, data });
+      } else {
+        createItemMutation.mutate(data);
+      }
     }
+    
+    // Limpar o estado de upload
+    setImageFile(null);
+    setImagePreview(null);
   };
   
   const confirmDelete = () => {
@@ -510,21 +607,93 @@ export default function AdminMenu() {
                             name="image"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>URL da Imagem</FormLabel>
+                                <FormLabel>Imagem do Item</FormLabel>
                                 <FormControl>
-                                  <div className="flex">
+                                  <div className="space-y-4">
+                                    {/* Campo de entrada oculto para a URL da imagem */}
                                     <Input 
-                                      placeholder="URL da imagem" 
+                                      type="hidden"
                                       value={field.value || ''}
                                       onChange={field.onChange}
-                                      onBlur={field.onBlur}
                                       name={field.name}
                                       ref={field.ref}
                                     />
+                                    
+                                    {/* Mostra preview se existir */}
+                                    {(imagePreview || field.value) && (
+                                      <div className="relative w-full h-48 bg-muted rounded-md overflow-hidden">
+                                        <img 
+                                          src={imagePreview || field.value} 
+                                          alt="Preview" 
+                                          className="w-full h-full object-cover"
+                                        />
+                                        <Button
+                                          type="button"
+                                          variant="destructive"
+                                          size="sm"
+                                          className="absolute top-2 right-2"
+                                          onClick={() => {
+                                            setImagePreview(null);
+                                            setImageFile(null);
+                                            field.onChange("");
+                                          }}
+                                        >
+                                          <X className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Botão de upload */}
+                                    {!imagePreview && !field.value && (
+                                      <div 
+                                        className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors"
+                                        onClick={() => imageInputRef.current?.click()}
+                                      >
+                                        <input 
+                                          type="file"
+                                          accept="image/*"
+                                          ref={imageInputRef}
+                                          className="hidden"
+                                          onChange={handleImageChange}
+                                        />
+                                        
+                                        <Upload className="h-8 w-8 text-gray-400 mb-2" />
+                                        <p className="text-sm text-gray-500">
+                                          Clique para fazer upload de uma imagem
+                                        </p>
+                                        <p className="text-xs text-gray-400 mt-1">
+                                          PNG, JPG ou GIF até 5MB
+                                        </p>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Input URL alternativa */}
+                                    {!imagePreview && !field.value && (
+                                      <div className="flex items-center justify-center mt-2">
+                                        <div className="border-t w-full"></div>
+                                        <span className="px-2 text-xs text-gray-500">ou</span>
+                                        <div className="border-t w-full"></div>
+                                      </div>
+                                    )}
+                                    
+                                    {!imagePreview && !field.value && (
+                                      <div className="flex">
+                                        <Input 
+                                          placeholder="Inserir URL da imagem" 
+                                          value={field.value || ''}
+                                          onChange={(e) => {
+                                            field.onChange(e.target.value);
+                                            setImageFile(null);
+                                            setImagePreview(null);
+                                          }}
+                                          className="flex-1"
+                                        />
+                                      </div>
+                                    )}
                                   </div>
                                 </FormControl>
                                 <FormDescription>
-                                  Insira a URL de uma imagem para o item
+                                  Faça upload ou informe a URL de uma imagem
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
