@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,7 +16,8 @@ import {
   MoveUp,
   MoveDown,
   CheckCircle,
-  XCircle
+  XCircle,
+  Upload
 } from "lucide-react";
 import {
   Card,
@@ -86,8 +87,12 @@ export default function AdminGallery() {
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<GalleryItem | null>(null);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [uploadedThumbnail, setUploadedThumbnail] = useState<File | null>(null);
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [mediaPreview, setMediaPreview] = useState<string | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -187,8 +192,46 @@ export default function AdminGallery() {
     }
   });
   
+  // Funções para gerenciar uploads
+  const handleMediaFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setMediaFile(file);
+      
+      // Criar uma URL temporária para visualização
+      const objectUrl = URL.createObjectURL(file);
+      setMediaPreview(objectUrl);
+      
+      // Atualizar o formulário
+      const fieldType = form.getValues("type");
+      form.setValue("src", objectUrl);
+    }
+  };
+  
+  const handleThumbnailFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setThumbnailFile(file);
+      
+      // Criar uma URL temporária para visualização
+      const objectUrl = URL.createObjectURL(file);
+      setThumbnailPreview(objectUrl);
+      
+      // Atualizar o formulário
+      form.setValue("thumbnail", objectUrl);
+    }
+  };
+  
   // Funções auxiliares
   const handleCreate = () => {
+    // Limpar qualquer preview e arquivos anteriores
+    setMediaFile(null);
+    setThumbnailFile(null);
+    if (mediaPreview) URL.revokeObjectURL(mediaPreview);
+    if (thumbnailPreview) URL.revokeObjectURL(thumbnailPreview);
+    setMediaPreview(null);
+    setThumbnailPreview(null);
+    
     setIsCreating(true);
     form.reset({
       title: "",
@@ -544,24 +587,27 @@ export default function AdminGallery() {
                                   <span className="text-gray-400">ou</span>
                                 </div>
                                 
-                                <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 hover:border-primary transition-colors">
-                                  <Input
+                                <div 
+                                  className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors"
+                                  onClick={() => mediaInputRef.current?.click()}
+                                >
+                                  <input 
                                     type="file"
-                                    accept={form.watch("type") === "image" 
-                                      ? "image/*" 
-                                      : "video/*"}
-                                    onChange={(e) => {
-                                      if (e.target.files && e.target.files[0]) {
-                                        // Converter o arquivo para uma URL de objeto
-                                        const fileURL = URL.createObjectURL(e.target.files[0]);
-                                        onChange(fileURL);
-                                        
-                                        // Salvar o arquivo para referência
-                                        setUploadedFile(e.target.files[0]);
-                                      }
-                                    }}
-                                    className="cursor-pointer"
+                                    accept={form.watch("type") === "image" ? "image/*" : "video/*"}
+                                    ref={mediaInputRef}
+                                    className="hidden"
+                                    onChange={handleMediaFileChange}
                                   />
+                                  
+                                  <Upload className="h-8 w-8 text-gray-400 mb-2" />
+                                  <p className="text-sm text-gray-500">
+                                    Clique para fazer upload de {form.watch("type") === "image" ? "uma imagem" : "um vídeo"}
+                                  </p>
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    {form.watch("type") === "image" 
+                                      ? "PNG, JPG ou GIF até 5MB" 
+                                      : "MP4, WEBM ou MOV até 20MB"}
+                                  </p>
                                 </div>
                                 
                                 {value && (
