@@ -10,7 +10,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Image
+  Image,
+  ArrowLeft
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -174,6 +175,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       
       {/* Conteúdo principal */}
       <main className="flex-1 overflow-y-auto">
+        <div className="border-b border-gray-200 bg-white p-4 flex justify-between items-center">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => navigate("/")}
+            className="flex items-center gap-1"
+          >
+            <ArrowLeft size={16} />
+            <span>Voltar ao site</span>
+          </Button>
+          <span className="text-sm text-gray-500">Las Tortillas - Painel de Administração</span>
+        </div>
+        
         <div className="py-6 px-8">
           {children}
         </div>

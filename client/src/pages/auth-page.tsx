@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { insertUserSchema } from "@shared/schema";
+import { ArrowLeft } from "lucide-react";
 
 // Esquema para o formulário de login
 const loginSchema = z.object({
@@ -82,6 +83,19 @@ export default function AuthPage() {
     <div className="flex flex-col md:flex-row min-h-screen">
       {/* Coluna do formulário */}
       <div className="flex-1 flex flex-col justify-center items-center p-6 md:p-10 bg-gray-50">
+        {/* Botão voltar para o site */}
+        <div className="absolute top-4 left-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/")}
+            className="flex items-center gap-1"
+          >
+            <ArrowLeft size={16} />
+            <span>Voltar ao site</span>
+          </Button>
+        </div>
+        
         <motion.div
           className="w-full max-w-md"
           initial={{ opacity: 0, y: 20 }}
