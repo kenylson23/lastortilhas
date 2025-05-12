@@ -9,7 +9,8 @@ import {
   Settings, 
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Image
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -49,6 +50,11 @@ const mainNavItems: SidebarItem[] = [
     icon: Calendar,
     label: "Reservas",
     href: "/admin/reservations"
+  },
+  {
+    icon: Image,
+    label: "Galeria",
+    href: "/admin/gallery"
   },
   {
     icon: Settings,

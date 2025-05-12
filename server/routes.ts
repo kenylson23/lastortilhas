@@ -105,6 +105,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Galeria pública
+  app.get("/api/gallery", async (req, res) => {
+    try {
+      const items = await storage.getActiveGalleryItems();
+      res.json({
+        status: "success",
+        data: items
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        status: "error",
+        message: error.message || "Falha ao buscar itens da galeria"
+      });
+    }
+  });
+  
   // ===== ROTAS ADMINISTRATIVAS =====
   
   // Aplicamos os middleware de autenticação e autorização para todas as rotas administrativas
@@ -373,6 +389,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(400).json({
         status: "error",
         message: error.message || "Falha ao atualizar status da reserva"
+      });
+    }
+  });
+  
+  // Gerenciamento de galeria
+  app.get("/api/admin/gallery", async (req, res) => {
+    try {
+      const items = await storage.getGalleryItems();
+      res.json({
+        status: "success",
+        data: items
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        status: "error",
+        message: error.message || "Falha ao buscar itens da galeria"
+      });
+    }
+  });
+  
+  app.post("/api/admin/gallery", async (req, res) => {
+    try {
+      const validatedData = insertGalleryItemSchema.parse(req.body);
+      const item = await storage.createGalleryItem(validatedData);
+      
+      res.status(201).json({
+        status: "success",
+        data: item
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        status: "error",
+        message: error.message || "Falha ao criar item da galeria"
+      });
+    }
+  });
+  
+  app.put("/api/admin/gallery/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({
+          status: "error",
+          message: "ID de item inválido"
+        });
+      }
+      
+      const existingItem = await storage.getGalleryItem(id);
+      if (!existingItem) {
+        return res.status(404).json({
+          status: "error",
+          message: "Item não encontrado"
+        });
+      }
+      
+      // Validar dados parciais
+      const updateData = req.body;
+      const updatedItem = await storage.updateGalleryItem(id, updateData);
+      
+      res.json({
+        status: "success",
+        data: updatedItem
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        status: "error",
+        message: error.message || "Falha ao atualizar item da galeria"
+      });
+    }
+  });
+  
+  app.delete("/api/admin/gallery/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({
+          status: "error",
+          message: "ID de item inválido"
+        });
+      }
+      
+      const existingItem = await storage.getGalleryItem(id);
+      if (!existingItem) {
+        return res.status(404).json({
+          status: "error",
+          message: "Item não encontrado"
+        });
+      }
+      
+      const success = await storage.deleteGalleryItem(id);
+      if (!success) {
+        return res.status(500).json({
+          status: "error",
+          message: "Falha ao excluir item"
+        });
+      }
+      
+      res.json({
+        status: "success",
+        message: "Item excluído com sucesso"
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        status: "error",
+        message: error.message || "Falha ao excluir item"
       });
     }
   });
