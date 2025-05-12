@@ -6,12 +6,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { Link } from "wouter";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MexicanButton } from "@/components/ui/button-variant";
 import { FaMapMarkerAlt, FaClock, FaPhoneAlt, FaEnvelope, FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
+import { Settings, CalendarRange } from "lucide-react";
 
 const reservationSchema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
@@ -26,6 +29,7 @@ type ReservationFormData = z.infer<typeof reservationSchema>;
 
 export default function ContactSection() {
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const form = useForm<ReservationFormData>({
     resolver: zodResolver(reservationSchema),
@@ -38,6 +42,8 @@ export default function ContactSection() {
       message: "",
     },
   });
+  
+  const isAdmin = user?.role === "admin";
   
   // Número do WhatsApp para envio das reservas
   const phoneNumber = "+244923456789"; // Substitua pelo número real do restaurante
@@ -370,6 +376,20 @@ Obrigado pela sua reserva! Entraremos em contato para confirmar.`);
             </div>
           </motion.div>
         </div>
+        
+        {isAdmin && (
+          <div className="flex justify-center mt-10">
+            <Link to="/admin/reservations">
+              <motion.button 
+                className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors bg-white p-3 rounded-md shadow-md"
+                whileHover={{ scale: 1.05 }}
+              >
+                <CalendarRange size={18} />
+                <span>Gerenciar Reservas no Painel Admin</span>
+              </motion.button>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

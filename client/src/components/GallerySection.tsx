@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaPlay, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -136,6 +136,20 @@ export default function GallerySection() {
                   )}
                 </motion.div>
               ))}
+            </div>
+          )}
+          
+          {isAdmin && (
+            <div className="flex justify-center mt-8">
+              <Link to="/admin/gallery">
+                <motion.button 
+                  className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <Settings size={16} />
+                  <span>Gerenciar Galeria no Painel Admin</span>
+                </motion.button>
+              </Link>
             </div>
           )}
         </div>
