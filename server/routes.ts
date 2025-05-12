@@ -152,6 +152,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/menu/categories", async (req, res) => {
     try {
       const validatedData = insertMenuCategorySchema.parse(req.body);
+      
+      // Verificar se já existe uma categoria com o mesmo nome
+      const allCategories = await storage.getMenuCategories();
+      const nameExists = allCategories.some(cat => cat.name === validatedData.name);
+      
+      if (nameExists) {
+        return res.status(400).json({
+          status: "error",
+          message: "duplicate key value violates unique constraint \"menu_categories_name_unique\""
+        });
+      }
+      
       const category = await storage.createMenuCategory(validatedData);
       
       res.status(201).json({
@@ -182,6 +194,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: "error",
           message: "Categoria não encontrada"
         });
+      }
+      
+      // Verificar se o nome está sendo alterado e se já existe outro com o mesmo nome
+      if (req.body.name && req.body.name !== existingCategory.name) {
+        // Buscar todas as categorias para verificar se o nome já existe
+        const allCategories = await storage.getMenuCategories();
+        const nameExists = allCategories.some(cat => 
+          cat.id !== id && cat.name === req.body.name
+        );
+        
+        if (nameExists) {
+          return res.status(400).json({
+            status: "error",
+            message: "duplicate key value violates unique constraint \"menu_categories_name_unique\""
+          });
+        }
       }
       
       // Validar dados parciais

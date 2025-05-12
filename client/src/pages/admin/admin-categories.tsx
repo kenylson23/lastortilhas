@@ -108,9 +108,16 @@ export default function AdminCategories() {
       });
     },
     onError: (error: Error) => {
+      let errorMessage = error.message;
+      
+      // Melhorar mensagem de erro para nome duplicado
+      if (errorMessage.includes("duplicate key") || errorMessage.includes("menu_categories_name_unique")) {
+        errorMessage = "Já existe uma categoria com este nome. Por favor, escolha um nome diferente.";
+      }
+      
       toast({
         title: "Erro ao criar categoria",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive"
       });
     }
