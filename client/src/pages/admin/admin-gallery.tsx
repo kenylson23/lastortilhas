@@ -73,9 +73,7 @@ import { GalleryItem } from "@shared/schema";
 const galleryItemFormSchema = z.object({
   title: z.string().min(2, "O título deve ter pelo menos 2 caracteres"),
   description: z.string().optional(),
-  src: z.string().min(5, "Forneça uma URL válida para a imagem/vídeo"),
-  thumbnail: z.string().optional(),
-  type: z.enum(["image", "video"]),
+  src: z.string().min(5, "Forneça uma URL válida para a imagem"),
   order: z.coerce.number().min(0),
   active: z.boolean().default(true),
 });
