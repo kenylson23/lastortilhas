@@ -66,7 +66,7 @@ import { GalleryItem } from "@shared/schema";
 const galleryItemFormSchema = z.object({
   title: z.string().min(2, "O título deve ter pelo menos 2 caracteres"),
   description: z.string().optional(),
-  src: z.string().min(5, "Forneça uma URL válida para a imagem"),
+  src: z.string().optional(), // Permite que o campo seja preenchido pelo upload
   order: z.coerce.number().min(0),
   active: z.boolean().default(true),
 });
@@ -231,6 +231,16 @@ export default function AdminGallery() {
   };
   
   const onSubmit = async (data: GalleryItemFormValues) => {
+    // Verificar se já existe um src (URL de imagem) ou se temos um arquivo para upload
+    if (!data.src && !mediaFile && !editingItem) {
+      toast({
+        title: "Imagem obrigatória",
+        description: "Por favor, faça upload de uma imagem antes de enviar o formulário",
+        variant: "destructive"
+      });
+      return; // Interrompe o envio do formulário
+    }
+    
     // Processar upload dos arquivos antes de enviar o form
     let formData = new FormData();
     
@@ -252,6 +262,8 @@ export default function AdminGallery() {
         const uploadResult = await uploadResponse.json();
         // Atualiza o URL da imagem com o URL retornado pelo servidor
         data.src = uploadResult.data.url;
+        
+        console.log("Upload realizado com sucesso, URL da imagem:", data.src);
       } catch (error: any) {
         toast({
           title: "Erro no upload",
@@ -260,6 +272,16 @@ export default function AdminGallery() {
         });
         return; // Interrompe o envio do formulário
       }
+    }
+    
+    // Verificar novamente se temos uma URL após o upload
+    if (!data.src) {
+      toast({
+        title: "URL da imagem não definida",
+        description: "Ocorreu um erro ao processar a imagem",
+        variant: "destructive"
+      });
+      return;
     }
     
     // Agora envia o formulário com as URLs atualizadas
