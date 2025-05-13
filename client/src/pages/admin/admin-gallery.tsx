@@ -132,6 +132,10 @@ export default function AdminGallery() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       setIsCreating(false);
+      setMediaFile(null);
+      setThumbnailFile(null);
+      setMediaPreview(null);
+      setThumbnailPreview(null);
       form.reset();
       toast({
         title: "Item criado com sucesso",
