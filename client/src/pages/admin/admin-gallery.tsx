@@ -294,7 +294,7 @@ export default function AdminGallery() {
         
         const uploadResult = await uploadResponse.json();
         // Atualiza o URL da imagem/vídeo com o URL retornado pelo servidor
-        data.src = uploadResult.data.fileUrl;
+        data.src = uploadResult.data.url;
       } catch (error: any) {
         toast({
           title: "Erro no upload",
@@ -323,7 +323,7 @@ export default function AdminGallery() {
         
         const uploadResult = await uploadResponse.json();
         // Atualiza o URL da miniatura com o URL retornado pelo servidor
-        data.thumbnail = uploadResult.data.fileUrl;
+        data.thumbnail = uploadResult.data.url;
       } catch (error: any) {
         toast({
           title: "Erro no upload da miniatura",

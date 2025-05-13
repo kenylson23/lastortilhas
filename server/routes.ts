@@ -60,8 +60,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Rota para upload de arquivos
   app.post("/api/upload", isAuthenticated, isAdmin, upload.single("file"), (req, res) => {
     try {
+      console.log("Requisição de upload recebida:", req.file);
       // Verificar se um arquivo foi enviado
       if (!req.file) {
+        console.log("Nenhum arquivo foi enviado na requisição");
         return res.status(400).json({
           status: "error",
           message: "Nenhum arquivo enviado"
