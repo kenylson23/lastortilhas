@@ -269,7 +269,68 @@ export default function AdminGallery() {
     form.reset();
   };
   
-  const onSubmit = (data: GalleryItemFormValues) => {
+  const onSubmit = async (data: GalleryItemFormValues) => {
+    // Processar upload dos arquivos antes de enviar o form
+    let formData = new FormData();
+    
+    // Upload do arquivo principal (imagem ou vídeo)
+    if (mediaFile) {
+      formData.append("file", mediaFile);
+      try {
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include"
+        });
+        
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.message || "Falha ao fazer upload do arquivo");
+        }
+        
+        const uploadResult = await uploadResponse.json();
+        // Atualiza o URL da imagem/vídeo com o URL retornado pelo servidor
+        data.src = uploadResult.data.fileUrl;
+      } catch (error: any) {
+        toast({
+          title: "Erro no upload",
+          description: error.message || "Não foi possível fazer upload do arquivo",
+          variant: "destructive"
+        });
+        return; // Interrompe o envio do formulário
+      }
+    }
+    
+    // Upload da miniatura (para vídeos)
+    if (thumbnailFile) {
+      formData = new FormData(); // Reset form data
+      formData.append("file", thumbnailFile);
+      try {
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include"
+        });
+        
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.message || "Falha ao fazer upload da miniatura");
+        }
+        
+        const uploadResult = await uploadResponse.json();
+        // Atualiza o URL da miniatura com o URL retornado pelo servidor
+        data.thumbnail = uploadResult.data.fileUrl;
+      } catch (error: any) {
+        toast({
+          title: "Erro no upload da miniatura",
+          description: error.message || "Não foi possível fazer upload da miniatura",
+          variant: "destructive"
+        });
+        return; // Interrompe o envio do formulário
+      }
+    }
+    
+    // Agora envia o formulário com as URLs atualizadas
     if (editingItem) {
       updateGalleryItemMutation.mutate({ id: editingItem.id, data });
     } else {
