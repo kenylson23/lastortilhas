@@ -58,54 +58,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
   // Rota para upload de arquivos
-  app.post("/api/upload", isAuthenticated, isAdmin, upload.single("file"), (req, res) => {
-    try {
-      console.log("Requisição de upload recebida:", req.file);
-      // Verificar se um arquivo foi enviado
-      if (!req.file) {
-        console.log("Nenhum arquivo foi enviado na requisição");
+  app.post("/api/upload", isAuthenticated, isAdmin, (req, res) => {
+    console.log("Requisição de upload recebida - início de processamento");
+    
+    // Usar o middleware de upload dentro da função para capturar erros
+    upload.single("file")(req, res, (err) => {
+      if (err) {
+        console.error("Erro no middleware de upload:", err);
         return res.status(400).json({
           status: "error",
-          message: "Nenhum arquivo enviado"
+          message: err.message || "Erro ao processar o upload"
         });
       }
       
-      // Verificar o tipo de arquivo
-      const isImage = req.file.mimetype.startsWith('image/');
-      const isVideo = req.file.mimetype.startsWith('video/');
-      
-      if (!isImage && !isVideo) {
-        // Remover o arquivo enviado
-        fs.unlinkSync(req.file.path);
-        
-        return res.status(400).json({
-          status: "error",
-          message: "Tipo de arquivo não suportado"
-        });
-      }
-      
-      // Construir a URL pública do arquivo
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
-      const relativePath = '/uploads/' + path.basename(req.file.path);
-      const fileUrl = `${baseUrl}${relativePath}`;
-      
-      // Retornar a URL do arquivo
-      res.json({
-        status: "success",
-        data: {
-          url: fileUrl,
-          originalName: req.file.originalname,
-          mimetype: req.file.mimetype,
-          size: req.file.size
+      try {
+        console.log("Arquivo recebido:", req.file);
+        // Verificar se um arquivo foi enviado
+        if (!req.file) {
+          console.log("Nenhum arquivo foi enviado na requisição");
+          return res.status(400).json({
+            status: "error",
+            message: "Nenhum arquivo enviado"
+          });
         }
-      });
-    } catch (error: any) {
-      console.error("Erro no upload:", error);
-      res.status(500).json({
-        status: "error",
-        message: error.message || "Falha ao processar o upload do arquivo"
-      });
-    }
+        
+        // Verificar o tipo de arquivo
+        const isImage = req.file.mimetype.startsWith('image/');
+        const isVideo = req.file.mimetype.startsWith('video/');
+        
+        console.log("Tipo de arquivo:", req.file.mimetype);
+        
+        if (!isImage && !isVideo) {
+          // Remover o arquivo enviado
+          fs.unlinkSync(req.file.path);
+          console.log("Arquivo removido por tipo não suportado");
+          
+          return res.status(400).json({
+            status: "error",
+            message: "Tipo de arquivo não suportado"
+          });
+        }
+        
+        // Construir a URL pública do arquivo
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const relativePath = '/uploads/' + path.basename(req.file.path);
+        const fileUrl = `${baseUrl}${relativePath}`;
+        
+        console.log("URL do arquivo gerada:", fileUrl);
+        
+        // Retornar a URL do arquivo
+        res.json({
+          status: "success",
+          data: {
+            url: fileUrl,
+            originalName: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: req.file.size
+          }
+        });
+      } catch (error: any) {
+        console.error("Erro no processamento do upload:", error);
+        res.status(500).json({
+          status: "error",
+          message: error.message || "Falha ao processar o upload do arquivo"
+        });
+      }
+    });
   });
 
   // ===== ROTAS PÚBLICAS =====
