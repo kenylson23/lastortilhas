@@ -84,18 +84,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Verificar o tipo de arquivo
         const isImage = req.file.mimetype.startsWith('image/');
-        const isVideo = req.file.mimetype.startsWith('video/');
         
         console.log("Tipo de arquivo:", req.file.mimetype);
         
-        if (!isImage && !isVideo) {
+        if (!isImage) {
           // Remover o arquivo enviado
           fs.unlinkSync(req.file.path);
           console.log("Arquivo removido por tipo não suportado");
           
           return res.status(400).json({
             status: "error",
-            message: "Tipo de arquivo não suportado"
+            message: "Apenas imagens são permitidas"
           });
         }
         

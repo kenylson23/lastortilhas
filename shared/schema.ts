@@ -90,8 +90,6 @@ export const galleryItems = pgTable("gallery_items", {
   title: text("title").notNull(),
   description: text("description"),
   src: text("src").notNull(),
-  thumbnail: text("thumbnail"),
-  type: text("type").notNull().default("image"), // image ou video
   order: integer("order").default(0),
   active: boolean("active").default(true),
   created_at: timestamp("created_at").defaultNow(),
@@ -101,8 +99,6 @@ export const insertGalleryItemSchema = createInsertSchema(galleryItems).pick({
   title: true,
   description: true,
   src: true,
-  thumbnail: true,
-  type: true,
   order: true,
   active: true,
 });
