@@ -241,22 +241,61 @@ export default function Header() {
                 </motion.a>
               ))}
               
-              {/* Link de autenticação ou logout */}
+              {/* Links de usuário logado ou link de login */}
               {user ? (
-                <motion.button
-                  className="text-left font-montserrat text-red-500 hover:text-red-700 transition-colors duration-300 py-2 border-b border-gray-100 flex items-center"
-                  onClick={() => {
-                    logoutMutation.mutate();
-                    setIsOpen(false);
-                  }}
-                  disabled={logoutMutation.isPending}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: 0.05 * (navLinks.length + 1) }}
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  {logoutMutation.isPending ? "Saindo..." : "Logout"}
-                </motion.button>
+                <>
+                  {/* Minhas Reservas */}
+                  <motion.a
+                    href="/minhas-reservas"
+                    className="font-montserrat text-gray-800 hover:text-secondary transition-colors duration-300 py-2 border-b border-gray-100 flex items-center"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsOpen(false);
+                      setLocation("/minhas-reservas");
+                    }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.05 * (navLinks.length + 1) }}
+                  >
+                    <CalendarRange className="h-4 w-4 mr-2" />
+                    Minhas Reservas
+                  </motion.a>
+                  
+                  {/* Painel Admin (apenas para administradores) */}
+                  {user.role === "admin" && (
+                    <motion.a
+                      href="/admin"
+                      className="font-montserrat text-primary font-semibold hover:text-primary/80 transition-colors duration-300 py-2 border-b border-gray-100 flex items-center"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsOpen(false);
+                        setLocation("/admin");
+                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.05 * (navLinks.length + 2) }}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Painel Admin
+                    </motion.a>
+                  )}
+                  
+                  {/* Logout */}
+                  <motion.button
+                    className="text-left font-montserrat text-red-500 hover:text-red-700 transition-colors duration-300 py-2 border-b border-gray-100 flex items-center"
+                    onClick={() => {
+                      logoutMutation.mutate();
+                      setIsOpen(false);
+                    }}
+                    disabled={logoutMutation.isPending}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.05 * (navLinks.length + 3) }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    {logoutMutation.isPending ? "Saindo..." : "Logout"}
+                  </motion.button>
+                </>
               ) : (
                 <motion.a
                   href="/auth"
