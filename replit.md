@@ -177,6 +177,13 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
   - Configuração de memória e Node.js otimizada para deploy
   - Todas as dependências (Lucide React) otimizadas para build rápido
   - Projeto 100% pronto para deploy no Vercel sem problemas
+- June 25, 2025. CORREÇÃO DEFINITIVA VERSÕES RADIX UI:
+  - Resolvido problema de versão incompatível @radix-ui/react-radio-group
+  - Atualizado de versão inválida (2.1.4) para versão estável (1.3.7)
+  - Sincronização completa entre package.json principal e client
+  - Vite config otimizado com optimizeDeps para Radix UI
+  - Build script melhorado com 15min timeout e 8GB memória
+  - Todas as dependências Radix UI compatíveis e funcionais
 
 ## User Preferences
 
