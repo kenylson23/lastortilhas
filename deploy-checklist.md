@@ -65,6 +65,7 @@ npm run check
 - ✅ Backend configurado para modo serverless no Vercel
 - ✅ Lazy loading implementado para cold starts
 - ✅ Dependências externas configuradas corretamente
+- ✅ Runtime version corrigido (removido nodejs18.x inválido)
 
 ### Serverless Adaptations
 - ✅ Detecção automática de ambiente Vercel

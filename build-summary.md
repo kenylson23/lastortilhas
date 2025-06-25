@@ -13,9 +13,9 @@
 - **Status**: vercel.json otimizado
 
 ### 3. Serverless Function
-- **Problema**: Import paths e inicialização
-- **Solução**: Lazy loading e error handling aprimorado
-- **Status**: api/index.js corrigido
+- **Problema**: Import paths e versão de runtime inválida
+- **Solução**: Lazy loading, error handling e runtime config corrigidos
+- **Status**: api/index.js corrigido, runtime removido (usa padrão do Vercel)
 
 ## Arquivos de Deploy Criados
 

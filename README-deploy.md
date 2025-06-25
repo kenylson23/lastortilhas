@@ -47,7 +47,11 @@ vercel --prod
 - O código detecta automaticamente ambiente Vercel
 - Retorna Express app em vez de HTTP server
 
-**Problema 3: Upload de arquivos**
+**Problema 3: Runtime version inválido**
+- Solução: Removido runtime específico, usa padrão Node.js do Vercel
+- Configuração corrigida em todos os arquivos vercel*.json
+
+**Problema 4: Upload de arquivos**
 - No Vercel, uploads são temporários
 - Para produção, configure Cloudinary ou AWS S3
 
