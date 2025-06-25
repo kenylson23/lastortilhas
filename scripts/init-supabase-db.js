@@ -1,14 +1,14 @@
 import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
 
-async function initializeDatabase() {
+async function initializeSupabaseDatabase() {
   const pool = new Pool({ 
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
   });
   
   try {
-    console.log('🔧 Inicializando banco de dados para Vercel...');
+    console.log('🔧 Inicializando banco de dados Supabase...');
     
     // Criar tabelas se não existirem
     console.log('📋 Criando tabelas...');
@@ -137,7 +137,7 @@ async function initializeDatabase() {
       `);
     }
     
-    console.log('✅ Banco de dados inicializado com sucesso!');
+    console.log('✅ Banco de dados Supabase inicializado com sucesso!');
     console.log('🔑 Admin criado: username: admin, password: admin123');
     
   } catch (error) {
@@ -150,9 +150,9 @@ async function initializeDatabase() {
 
 // Executar se chamado diretamente
 if (import.meta.url === `file://${process.argv[1]}`) {
-  initializeDatabase()
+  initializeSupabaseDatabase()
     .then(() => process.exit(0))
     .catch(() => process.exit(1));
 }
 
-export default initializeDatabase;
+export default initializeSupabaseDatabase;

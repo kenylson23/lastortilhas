@@ -1,27 +1,20 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
-
-// Configurar WebSocket apenas se não estiver no Vercel
-async function setupWebSocket() {
-  if (!process.env.VERCEL && typeof window === 'undefined') {
-    try {
-      const ws = await import("ws");
-      neonConfig.webSocketConstructor = ws.default;
-    } catch (error) {
-      console.warn('WebSocket not available:', error.message);
-    }
-  }
-}
-
-// Inicializar WebSocket de forma assíncrona
-setupWebSocket();
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
+    "DATABASE_URL must be set. Please configure your Supabase database connection.",
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle({ client: pool, schema });
+// Configuração otimizada para Supabase
+export const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+export const db = drizzle(pool, { schema });

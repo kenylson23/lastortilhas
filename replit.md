@@ -142,6 +142,12 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
   - Script de inicialização do database para Vercel
   - Guia completo de deploy (VERCEL-DEPLOY-GUIDE.md)
   - Node.js 18 configurado (.nvmrc)
+- June 25, 2025. Migração para Supabase como banco de dados:
+  - Substituído @neondatabase/serverless por pg (PostgreSQL padrão)
+  - Configuração otimizada para Supabase com SSL e connection pooling
+  - Script de inicialização específico para Supabase (init-supabase-db.js)
+  - Guia completo de setup Supabase (SUPABASE-SETUP-GUIDE.md)
+  - APIs atualizadas para compatibilidade total com Supabase
 
 ## User Preferences
 

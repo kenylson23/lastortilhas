@@ -1,6 +1,6 @@
 import express from 'express';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import session from 'express-session';
@@ -11,14 +11,17 @@ import { eq, desc, asc } from 'drizzle-orm';
 import { z } from 'zod';
 import { insertReservationSchema, insertUserSchema } from '../shared/schema.js';
 
-// WebSocket não é necessário no Vercel
-neonConfig.webSocketConstructor = undefined;
-
 const app = express();
 
-// Configuração do banco de dados
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle({ client: pool, schema });
+// Configuração do banco de dados para Supabase
+const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+const db = drizzle(pool, { schema });
 
 // Middleware
 app.use(express.json());
