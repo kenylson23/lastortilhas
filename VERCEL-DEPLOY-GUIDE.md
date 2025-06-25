@@ -3,16 +3,16 @@
 ## Pré-requisitos
 
 1. **Conta no Vercel**: Criar conta em [vercel.com](https://vercel.com)
-2. **Database Neon**: Criar database PostgreSQL em [neon.tech](https://neon.tech)
+2. **Database Supabase**: Database PostgreSQL já configurado no Supabase
 3. **Repositório Git**: Projeto commitado no GitHub/GitLab
 
 ## Passos para Deploy
 
-### 1. Preparação do Database
+### 1. Database Supabase (Já Configurado)
 
-Criar um database PostgreSQL no Neon e copiar a `DATABASE_URL`:
+O database Supabase já está configurado e funcionando. Use esta `DATABASE_URL` no Vercel:
 ```
-postgresql://username:password@ep-xxx.us-east-1.aws.neon.tech/dbname?sslmode=require
+postgresql://postgres.nuoblhgwtxyrafbyxjkw:Kenylson%4023@aws-0-us-east-1.pooler.supabase.com:6543/postgres
 ```
 
 ### 2. Deploy no Vercel
@@ -34,8 +34,8 @@ vercel --prod
 No Dashboard Vercel > Settings > Environment Variables:
 
 ```
-DATABASE_URL = postgresql://username:password@ep-xxx.us-east-1.aws.neon.tech/dbname?sslmode=require
-SESSION_SECRET = uma_chave_secreta_forte_aqui
+DATABASE_URL = postgresql://postgres.nuoblhgwtxyrafbyxjkw:Kenylson%4023@aws-0-us-east-1.pooler.supabase.com:6543/postgres
+SESSION_SECRET = las_tortillas_production_secret_2025
 NODE_ENV = production
 ```
 
