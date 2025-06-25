@@ -135,6 +135,13 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
   - Todas as APIs testadas e funcionando (200 OK)
   - Sistema de autenticação validado
   - Sistema de reservas testado e operacional
+- June 25, 2025. Configuração completa para deploy no Vercel:
+  - vercel.json configurado para frontend estático + API serverless
+  - api/index.js criado com todas as rotas funcionais
+  - client/package.json e build config preparados
+  - Script de inicialização do database para Vercel
+  - Guia completo de deploy (VERCEL-DEPLOY-GUIDE.md)
+  - Node.js 18 configurado (.nvmrc)
 
 ## User Preferences
 
