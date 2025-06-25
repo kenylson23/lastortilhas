@@ -125,6 +125,7 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
 - June 25, 2025. Preparado para deploy no Vercel com configurações serverless
 - June 25, 2025. Corrigidos problemas de runtime version nas funções Vercel
 - June 25, 2025. Configuração única de deploy criada, removidas configurações extras
+- June 25, 2025. Correções finais: routing SPA, imports ES modules, .vercelignore
 
 ## User Preferences
 

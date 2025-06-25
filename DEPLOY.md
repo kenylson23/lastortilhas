@@ -19,8 +19,9 @@ vercel --prod
 ## Configuração do vercel.json
 
 - **builds**: Define como construir frontend e backend
-- **routes**: Roteamento entre API e arquivos estáticos
+- **routes**: Roteamento SPA com fallback para index.html
 - **maxDuration**: 30 segundos para a função serverless
+- **filesystem**: Serve arquivos estáticos antes do fallback
 - **env**: NODE_ENV=production
 
 ## Variáveis de ambiente necessárias

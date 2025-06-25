@@ -7,7 +7,8 @@ export default async function handler(req, res) {
   if (!app) {
     try {
       // Importar routes do backend construído
-      const { registerRoutes } = await import('../dist/index.js');
+      const routes = await import('../dist/index.js');
+      const { registerRoutes } = routes;
       
       // Inicializar Express
       app = express();
