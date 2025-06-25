@@ -107,9 +107,9 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
 - **File Storage**: Local filesystem in `public/uploads` directory
 
 ### Deployment Platform
-- **Target**: Replit autoscale deployment
-- **Port**: External port 80 maps to internal port 5000
-- **Modules**: Node.js 20, PostgreSQL 16, web development tools
+- **Target**: Replit deployment
+- **Port**: Application runs on port 5000
+- **Environment**: Node.js 20, PostgreSQL database, web development tools
 
 ### Database Setup
 - Automatic table creation on first run
@@ -122,10 +122,7 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
 - June 25, 2025. Initial setup
 - June 25, 2025. Sistema de autenticação corrigido e funcionando
 - June 25, 2025. Galeria simplificada para apenas imagens (vídeos removidos)
-- June 25, 2025. Preparado para deploy no Vercel com configurações serverless
-- June 25, 2025. Corrigidos problemas de runtime version nas funções Vercel
-- June 25, 2025. Configuração única de deploy criada, removidas configurações extras
-- June 25, 2025. Correções finais: routing SPA, imports ES modules, .vercelignore
+- June 25, 2025. Removidos todos os arquivos de deploy do Vercel (configuração limpa para Replit)
 
 ## User Preferences
 
