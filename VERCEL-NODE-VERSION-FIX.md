@@ -12,17 +12,14 @@ O Vercel estava detectando Node.js 22.x mas precisa da versão 18.x.
    ```
    - Define explicitamente Node.js 18 para o Vercel
 
-2. **vercel.json atualizado**
+2. **vercel.json simplificado**
    ```json
    {
-     "functions": {
-       "api/index.js": {
-         "runtime": "nodejs18.x"
-       }
-     }
+     "routes": [...]
    }
    ```
-   - Runtime especificado como nodejs18.x
+   - Removido functions/runtime - Vercel detectará automaticamente
+   - Usando configurações do projeto para definir Node.js 18.x
 
 3. **Configurações do Projeto Vercel**
    - Definir Node.js Version como 18.x nas Project Settings
