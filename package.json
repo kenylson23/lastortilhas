@@ -7,7 +7,7 @@
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --external:@neondatabase/serverless --external:ws",
     "start": "NODE_ENV=production node dist/index.js",
-    "vercel-build": "node build-simple.js",
+    "vercel-build": "node build-minimal.js",
     "check": "tsc",
     "db:push": "drizzle-kit push"
   },

@@ -14,8 +14,9 @@
 
 3. **Build Timeout no Vercel** ✅ RESOLVIDO
    - Criado `build-minimal.js` - build rápido sem travamentos
-   - Configuração vercel.json simplificada
+   - Configuração vercel.json simplificada (removido `builds`)
    - Runtime nodejs18.x com memory otimizada
+   - Vercel usará configurações do projeto, não vercel.json builds
 
 ### Verificação Final - TUDO FUNCIONANDO:
 ```bash
