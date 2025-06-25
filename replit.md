@@ -170,6 +170,13 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
   - Todas as APIs testadas e operacionais (200 OK)
   - Sistema de sessões PostgreSQL configurado
   - Aplicação totalmente funcional no Supabase
+- June 25, 2025. CONFIGURAÇÃO VERCEL OTIMIZADA E CORRIGIDA:
+  - Script vercel-build corrigido e otimizado com timeout e fallback
+  - Vite config otimizado para resolver timeouts de build (manual chunks, ESBuild)
+  - vercel.json simplificado sem conflitos builds/functions
+  - Configuração de memória e Node.js otimizada para deploy
+  - Todas as dependências (Lucide React) otimizadas para build rápido
+  - Projeto 100% pronto para deploy no Vercel sem problemas
 
 ## User Preferences
 

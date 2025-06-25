@@ -13,14 +13,28 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    minify: 'esbuild',
+    target: 'es2018',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
-          utils: ['framer-motion', '@tanstack/react-query']
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('lucide-react')) {
+              return 'icons';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui';
+            }
+            if (id.includes('react')) {
+              return 'react';
+            }
+            return 'vendor';
+          }
         }
       }
     }
+  },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   }
 })
