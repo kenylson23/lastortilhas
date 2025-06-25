@@ -151,6 +151,14 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
   - Tabelas recriadas com BIGSERIAL e timestamps corretos do Supabase
   - Todas as funcionalidades testadas e operacionais (menu, galeria, autenticação)
   - Dashboard do Supabase agora exibe todas as tabelas corretamente
+- June 25, 2025. Migração completa e correção de conectividade:
+  - Configuração híbrida para suportar tanto Supabase quanto PostgreSQL local
+  - Script migrate-to-supabase.js criado para migração completa
+  - Database estruturado com dados completos (4 categorias, 10 itens de menu, 6 itens de galeria)
+  - Sistema de detecção automática do tipo de banco (Supabase vs PostgreSQL local)
+  - Conexão otimizada com pooling e tratamento de erros
+  - Usuário admin configurado (username: admin, password: admin123)
+  - Aplicação 100% funcional no Replit com todas as APIs operacionais
 
 ## User Preferences
 
