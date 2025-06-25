@@ -8,9 +8,9 @@
 - **Status**: Configuração alternativa disponível
 
 ### 2. Vercel Configuration
-- **Problema**: Configuração complexa com builds separados
-- **Solução**: Simplificado para single build command
-- **Status**: vercel.json otimizado
+- **Problema**: Uso incorreto de builds + functions simultaneamente
+- **Solução**: Configuração corrigida usando apenas builds com maxDuration
+- **Status**: vercel.json otimizado (sem conflito builds/functions)
 
 ### 3. Serverless Function
 - **Problema**: Import paths e versão de runtime inválida
