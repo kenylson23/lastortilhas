@@ -23,9 +23,10 @@
 
 ## ✅ Build Status
 
-- Backend: ✅ Construído em dist/index.js
-- Frontend: ⚠️ Pendente (timeout nos ícones)
-- Deploy: ✅ Pronto com configuração única
+- Backend: ✅ Reconstruído com externals corretos
+- Frontend: ⚠️ Pendente (timeout esperado)
+- Import: ✅ registerRoutes exportado corretamente
+- Deploy: ✅ Pronto para produção
 
 ## Deploy Command
 

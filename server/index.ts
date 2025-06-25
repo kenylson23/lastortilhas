@@ -72,4 +72,5 @@ app.use((req, res, next) => {
   });
 })();
 
+// Export para compatibilidade com Vercel serverless
 export { registerRoutes } from "./routes.js";
