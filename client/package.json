@@ -1,0 +1,6 @@
+{
+  "name": "las-tortillas-client",
+  "scripts": {
+    "build": "cd .. && vite build"
+  }
+}
