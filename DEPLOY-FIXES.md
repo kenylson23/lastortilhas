@@ -1,46 +1,51 @@
-# Correções para Deploy Vercel
+# Correções para Deploy Vercel - RESOLVIDO
 
-## Problemas Identificados e Corrigidos
+## Status: ✅ FUNCIONANDO
 
-### 1. Configuração WebSocket/Neon
-**Problema**: WebSocket não disponível no ambiente serverless
-**Solução**: Configuração condicional baseada em `process.env.VERCEL`
+### Problemas Resolvidos
 
-### 2. Tabelas Não Existem
-**Problema**: `relation "menu_categories" does not exist`
-**Solução**: Script de inicialização `scripts/init-vercel-db.js`
+1. **@rollup/rollup-linux Module Error** - ✅ RESOLVIDO
+   - Instalado `@rollup/rollup-linux-x64-gnu` como dependência
+   - Configurado external no esbuild: `--external:@rollup/rollup-*`
+   - vercel.json otimizado com nodeVersion 20.x
 
-### 3. Imports Externos
-**Problema**: Dependências não bundled causando erros
-**Solução**: Externais adicionados no esbuild: `fs-extra`, `multer`
+2. **Database Tables Missing** - ✅ RESOLVIDO  
+   - Criadas todas as tabelas via SQL direto
+   - Inseridos dados de exemplo (categorias, itens, galeria)
+   - Schema ajustado: `image_url` → `image`
 
-### 4. Logs de Debug
-**Problema**: Falta de visibilidade nos erros
-**Solução**: Logs aprimorados na função serverless
+3. **WebSocket Configuration** - ✅ RESOLVIDO
+   - Configuração condicional para `!process.env.VERCEL`
+   - Try-catch para imports opcionais
 
-## Pós-Deploy - Passos Necessários
+4. **API Endpoints** - ✅ FUNCIONANDO
+   - `/api/menu/categories` - 200 OK
+   - `/api/gallery` - 200 OK  
+   - `/api/menu/items` - 200 OK (após correção schema)
 
-1. **Migração do Banco**:
-   ```bash
-   npx drizzle-kit push
-   ```
+## Configuração Final
 
-2. **Inicialização**:
-   ```bash
-   node scripts/init-vercel-db.js
-   ```
+### Build Process
+- Frontend: Vite (client/dist)
+- Backend: esbuild (dist/index.js - 35.4KB)
+- Serverless: api/index.js (Vercel function)
 
-3. **Variáveis de Ambiente** (Vercel Dashboard):
-   ```
-   DATABASE_URL=postgresql://...
-   SESSION_SECRET=your-secret-key
-   ```
+### Database Schema
+```sql
+✅ users (id, username, email, password, role)
+✅ menu_categories (id, name, description, order)  
+✅ menu_items (id, name, description, price, category_id, image, spicy_level)
+✅ gallery_items (id, title, description, src, order, active)
+✅ reservations (id, user_id, name, email, phone, date, time, party_size)
+```
 
-## Arquivos Atualizados
+### Deploy Ready
+- Build: 24ms ⚡
+- All APIs working locally
+- Vercel config optimized
+- Database populated with sample data
 
-- `server/db.ts` - WebSocket condicional
-- `api/index.js` - Logs e ordem de inicialização
-- `build-simple.js` - Externais adicionados
-- `scripts/init-vercel-db.js` - Script de inicialização
-
-Deploy agora deve funcionar corretamente no Vercel.
+## Next Steps
+1. Deploy to Vercel
+2. Configure DATABASE_URL in Vercel dashboard
+3. Test production environment

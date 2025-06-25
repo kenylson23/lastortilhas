@@ -3,9 +3,13 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import * as schema from "@shared/schema";
 
 // Configurar WebSocket apenas se não estiver no Vercel
-if (!process.env.VERCEL) {
-  const ws = await import("ws");
-  neonConfig.webSocketConstructor = ws.default;
+if (!process.env.VERCEL && typeof window === 'undefined') {
+  try {
+    const ws = await import("ws");
+    neonConfig.webSocketConstructor = ws.default;
+  } catch (error) {
+    console.warn('WebSocket not available:', error.message);
+  }
 }
 
 if (!process.env.DATABASE_URL) {
