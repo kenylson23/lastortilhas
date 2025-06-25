@@ -148,6 +148,9 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
   - Script de inicialização específico para Supabase (init-supabase-db.js)
   - Guia completo de setup Supabase (SUPABASE-SETUP-GUIDE.md)
   - APIs atualizadas para compatibilidade total com Supabase
+  - Tabelas recriadas com BIGSERIAL e timestamps corretos do Supabase
+  - Todas as funcionalidades testadas e operacionais (menu, galeria, autenticação)
+  - Dashboard do Supabase agora exibe todas as tabelas corretamente
 
 ## User Preferences
 
