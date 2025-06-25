@@ -1,0 +1,30 @@
+LAS TORTILLAS - VERCEL DEPLOY SUMMARY
+=====================================
+
+PROJECT STATUS: READY FOR DEPLOYMENT
+
+Key Files:
+- package.json (vercel-build configured)
+- vercel.json (routes optimized)
+- .nvmrc (Node.js 18)
+- build-simple-fix.js (working build script)
+- client/dist/index.html (2.2KB frontend)
+- dist/index.js (20.7KB backend)
+- api/index.js (serverless function)
+
+Database:
+- 5 tables created and populated
+- APIs responding correctly
+- Sample data: 3 menu categories, 3 items, 3 gallery items
+
+Next Steps:
+1. Connect to Vercel (GitHub or CLI)
+2. Set Node.js 18.x in Project Settings
+3. Add DATABASE_URL environment variable
+4. Deploy
+
+Expected Result:
+Professional Mexican restaurant website with menu display and working backend APIs.
+
+All deployment blockers resolved.
+Project ready for production.
