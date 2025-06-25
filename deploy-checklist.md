@@ -58,9 +58,23 @@ npm run check
 - Password: admin123
 - Role: admin
 
+## Conflitos Resolvidos
+
+### Build Issues
+- ✅ Timeout no build do Vite corrigido com configuração otimizada
+- ✅ Backend configurado para modo serverless no Vercel
+- ✅ Lazy loading implementado para cold starts
+- ✅ Dependências externas configuradas corretamente
+
+### Serverless Adaptations
+- ✅ Detecção automática de ambiente Vercel
+- ✅ Express app vs HTTP server resolvido
+- ✅ Configuração de proxy para deployment
+
 ## Observações Importantes
 
 1. **Uploads**: No Vercel, arquivos uploaded são temporários. Para produção, considere usar Cloudinary ou AWS S3.
 2. **Sessões**: Configuradas para usar PostgreSQL como store.
 3. **Segurança**: Cookies seguros habilitados em produção.
 4. **Performance**: Build otimizado com Vite e esbuild.
+5. **Build Time**: Se o build demorar, use vercel-simple.json como alternativa.

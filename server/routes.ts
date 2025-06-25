@@ -15,7 +15,7 @@ import fs from "fs-extra";
 import path from "path";
 import { randomUUID } from "crypto";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<Express | Server> {
   // Configurar diretório de uploads
   const uploadDir = path.resolve("public/uploads");
   fs.ensureDirSync(uploadDir);
@@ -705,7 +705,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Em ambiente serverless (Vercel), retornar apenas o app
+  if (process.env.VERCEL) {
+    return app;
+  }
+  
+  // Em ambiente normal, criar e retornar servidor HTTP
   const httpServer = createServer(app);
-
   return httpServer;
 }

@@ -37,6 +37,20 @@ npm run build
 vercel --prod
 ```
 
+### Possíveis Conflitos de Build
+
+**Problema 1: Timeout no build**
+- Solução: O build pode demorar devido aos ícones do lucide-react
+- Use `vercel-simple.json` se houver problemas
+
+**Problema 2: Serverless vs HTTP Server**
+- O código detecta automaticamente ambiente Vercel
+- Retorna Express app em vez de HTTP server
+
+**Problema 3: Upload de arquivos**
+- No Vercel, uploads são temporários
+- Para produção, configure Cloudinary ou AWS S3
+
 ### Estrutura de Pastas para Deploy
 
 ```
