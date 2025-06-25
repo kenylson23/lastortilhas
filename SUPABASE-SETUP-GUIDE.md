@@ -1,170 +1,56 @@
-# Guia de Configuração Supabase - Las Tortillas
+# Guia de Configuração do Supabase
 
-## Configuração do Banco de Dados
+## Passo 1: Criar Projeto no Supabase
 
-### 1. Criar Projeto no Supabase
+1. Acesse: https://supabase.com/dashboard/projects
+2. Clique em "New project"
+3. Escolha sua organização
+4. Preencha os dados:
+   - **Nome do projeto**: las-tortillas-restaurant
+   - **Database Password**: Crie uma senha forte (anote essa senha!)
+   - **Região**: Escolha a mais próxima (ex: South America)
+5. Clique em "Create new project"
+6. Aguarde a criação (pode levar alguns minutos)
 
-1. Acesse [supabase.com](https://supabase.com) e crie uma conta
-2. Clique em "New Project"
-3. Configure:
-   - **Nome**: Las Tortillas Restaurant
-   - **Database Password**: Senha forte (salve em local seguro)
-   - **Região**: Escolha a mais próxima dos usuários
+## Passo 2: Obter a String de Conexão
 
-### 2. Obter String de Conexão
+1. No painel do seu projeto, clique em "Connect" (botão verde no topo)
+2. Na aba "Connection pooling", copie a URI que aparece em "Connection string"
+3. A URL terá este formato:
+   ```
+   postgresql://postgres.xxxxxx:[YOUR-PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres
+   ```
+4. **IMPORTANTE**: Substitua `[YOUR-PASSWORD]` pela senha que você criou no Passo 1
 
-1. No dashboard do projeto, vá em **Settings** > **Database**
-2. Copie a **Connection string** na seção "Connection parameters"
-3. Format: `postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres`
-4. Substitua `[YOUR-PASSWORD]` pela senha definida
+## Passo 3: Verificar a URL
 
-### 3. Configurar Variáveis de Ambiente
+A URL correta deve:
+- Começar com `postgresql://`
+- Conter `supabase.com` no endereço
+- Ter a porta `:6543` para connection pooling
+- Não conter `[YOUR-PASSWORD]` (deve estar substituído pela senha real)
 
-**Para Desenvolvimento Local (Replit):**
-```bash
-DATABASE_URL=postgresql://postgres:sua_senha@db.projeto_ref.supabase.co:5432/postgres
-SESSION_SECRET=uma_chave_secreta_forte
+## Exemplo de URL Correta
+```
+postgresql://postgres.abcdefghijklmnop:MinhaSeñha123@aws-0-us-west-1.pooler.supabase.com:6543/postgres
 ```
 
-**Para Produção (Vercel):**
-No dashboard Vercel > Settings > Environment Variables:
-```
-DATABASE_URL = postgresql://postgres:sua_senha@db.projeto_ref.supabase.co:5432/postgres
-SESSION_SECRET = uma_chave_secreta_forte
-NODE_ENV = production
-```
+## Configuração no Replit
 
-### 4. Inicializar Banco de Dados
+Depois de obter a URL correta:
+1. Copie a URL completa
+2. Forneça ela quando solicitado
+3. O sistema migrará automaticamente todos os dados
 
-**Opção A: Script Automatizado**
-```bash
-node scripts/init-supabase-db.js
-```
+## Verificação
 
-**Opção B: SQL Manual no Supabase**
-1. Acesse **SQL Editor** no dashboard Supabase
-2. Execute o script SQL completo disponível no arquivo
-
-## Vantagens do Supabase
-
-### Performance e Escalabilidade
-- **Connection Pooling**: Automático via PgBouncer
-- **Backup Automático**: Point-in-time recovery
-- **Escalabilidade**: Vertical e horizontal automática
-- **Global CDN**: Baixa latência mundial
-
-### Recursos Adicionais
-- **Dashboard Visual**: Interface gráfica para dados
-- **APIs REST/GraphQL**: Geradas automaticamente
-- **Real-time**: Subscriptions WebSocket nativas
-- **Auth**: Sistema de autenticação integrado
-- **Storage**: Bucket de arquivos nativo
-
-### Monitoramento
-- **Métricas**: CPU, Memory, Disk usage
-- **Logs**: Queries, connections, errors
-- **Alertas**: Email/Slack para problemas
-
-## Configuração Otimizada
-
-### Pool de Conexões
-```javascript
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  max: 20,                    // Máximo 20 conexões
-  idleTimeoutMillis: 30000,   // 30s timeout idle
-  connectionTimeoutMillis: 2000, // 2s timeout conexão
-});
-```
-
-### Políticas RLS (Row Level Security)
-O Supabase oferece RLS avançado para segurança:
-```sql
--- Exemplo: Usuários só veem suas próprias reservas
-ALTER TABLE reservations ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view own reservations" ON reservations
-  FOR SELECT USING (auth.uid() = user_id::text);
-```
-
-## Migração de Dados
-
-### De Neon para Supabase
-1. **Exportar dados**: `pg_dump` do Neon
-2. **Importar**: SQL Editor do Supabase
-3. **Verificar**: Conferir integridade dos dados
-
-### De PostgreSQL local
-```bash
-# Backup local
-pg_dump postgres://local_url > backup.sql
-
-# Restore no Supabase
-psql "postgresql://postgres:senha@db.ref.supabase.co:5432/postgres" < backup.sql
-```
-
-## Desenvolvimento
-
-### Ambiente Local
-- **Supabase CLI**: Para desenvolvimento local
-- **Docker**: Container PostgreSQL compatível
-- **Seeds**: Scripts de dados de teste
-
-### Testing
-```bash
-# Testar conexão
-node -e "
-import { Pool } from 'pg';
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-pool.query('SELECT NOW()').then(r => console.log('✅ Conectado:', r.rows[0]));
-"
-```
+Após configurar, você poderá:
+- Ver as tabelas no painel do Supabase (SQL Editor)
+- Acessar os dados através da aplicação
+- Usar todas as funcionalidades do dashboard do Supabase
 
 ## Troubleshooting
 
-### Problemas Comuns
-- **SSL Error**: Adicionar `?sslmode=require` na URL
-- **Connection Timeout**: Verificar firewall/região
-- **Pool Exhausted**: Aumentar `max` connections
-
-### Logs Úteis
-```javascript
-// Habilitar logs de query
-const db = drizzle(pool, { 
-  schema,
-  logger: true  // Mostra todas as queries SQL
-});
-```
-
-## Backup e Segurança
-
-### Backup Automático
-- **Point-in-time**: Até 7 dias (plano gratuito)
-- **Daily backups**: Retenção configurável
-- **Manual backup**: Via dashboard ou CLI
-
-### Segurança
-- **Criptografia**: AES-256 em repouso
-- **SSL/TLS**: Criptografia em trânsito
-- **Audit Logs**: Rastreamento de acesso
-- **IP Allowlisting**: Controle de acesso por IP
-
-## Custos e Limites
-
-### Plano Gratuito
-- **Database**: 500MB
-- **Bandwidth**: 2GB/mês
-- **Conexões**: 60 simultâneas
-- **Backup**: 7 dias
-
-### Upgrade Path
-- **Pro**: $25/mês por projeto
-- **Team**: $599/mês para equipes
-- **Enterprise**: Customizado
-
-## Credenciais de Acesso
-
-Após inicialização:
-- **Admin**: `admin` / `admin123`
-- **Alterar senha**: Via painel administrativo
+**Erro "ENOTFOUND"**: URL incorreta ou projeto pausado
+**Erro de autenticação**: Senha incorreta na URL
+**Timeout**: Verifique se o projeto está ativo no Supabase
