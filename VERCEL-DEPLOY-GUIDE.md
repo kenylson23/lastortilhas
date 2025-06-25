@@ -17,17 +17,18 @@ postgresql://postgres.nuoblhgwtxyrafbyxjkw:Kenylson%4023@aws-0-us-east-1.pooler.
 
 ### 2. Deploy no Vercel
 
-**Opção A: Via CLI**
+**Configuração Simplificada (Recomendado):**
+1. Acessar [vercel.com/dashboard](https://vercel.com/dashboard)
+2. Clicar em "New Project"
+3. Importar repositório do GitHub
+4. Vercel detectará automaticamente a configuração
+5. Configurar apenas as variáveis de ambiente
+
+**Via CLI (Alternativo):**
 ```bash
 npm install -g vercel
 vercel --prod
 ```
-
-**Opção B: Via Dashboard**
-1. Acessar [vercel.com/dashboard](https://vercel.com/dashboard)
-2. Clicar em "New Project"
-3. Importar repositório do GitHub
-4. Configurar variáveis de ambiente
 
 ### 3. Configurar Variáveis de Ambiente
 

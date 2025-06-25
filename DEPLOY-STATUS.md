@@ -6,7 +6,8 @@
 - **Database**: Supabase PostgreSQL funcionando ✅
 - **Backend API**: `/api/index.js` configurado para Vercel ✅
 - **Frontend**: React/Vite com build configurado ✅
-- **Configuração**: `vercel.json` atualizado ✅
+- **Configuração**: `vercel.json` otimizado (sem conflitos builds/functions) ✅
+- **Node.js**: `.nvmrc` configurado para versão 18 ✅
 - **Guia**: `VERCEL-DEPLOY-GUIDE.md` atualizado ✅
 
 ### Dados no Database Supabase
