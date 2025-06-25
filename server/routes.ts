@@ -238,6 +238,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Rota para verificar usuário autenticado
+  app.get("/api/user", (req, res) => {
+    if (req.isAuthenticated()) {
+      // Retornar usuário sem a senha
+      const { password, ...userWithoutPassword } = req.user;
+      res.json({
+        status: "success",
+        data: userWithoutPassword
+      });
+    } else {
+      res.status(401).json({
+        status: "error",
+        message: "Não autenticado"
+      });
+    }
+  });
+  
   // ===== ROTAS ADMINISTRATIVAS =====
   
   // Aplicamos os middleware de autenticação e autorização para todas as rotas administrativas

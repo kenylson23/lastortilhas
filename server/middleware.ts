@@ -14,12 +14,12 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
 
 // Middleware para verificar se o usuário é um administrador
 export function isAdmin(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated() && req.user.role === "admin") {
+  if (req.isAuthenticated() && req.user && req.user.role === "admin") {
     return next();
   }
   
-  res.status(403).json({
+  res.status(401).json({
     status: "error",
-    message: "Acesso negado. Privilégios de administrador necessários."
+    message: "Não autenticado"
   });
 }
