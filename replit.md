@@ -124,6 +124,7 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
 - June 25, 2025. Galeria simplificada para apenas imagens (vídeos removidos)
 - June 25, 2025. Removidos todos os arquivos de deploy do Vercel (configuração limpa para Replit)
 - June 25, 2025. Projeto preparado para deploy no Vercel com configuração serverless otimizada
+- June 25, 2025. Configuração Vercel corrigida: package.json como build source, deploy pronto
 
 ## User Preferences
 

@@ -1,15 +1,15 @@
 {
-  "name": "las-tortillas-restaurant",
+  "name": "rest-express",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --external:@neondatabase/serverless --external:ws",
+    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
-    "vercel-build": "node build-simple.js",
     "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "vercel-build": "node build-simple.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
