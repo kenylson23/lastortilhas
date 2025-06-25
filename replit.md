@@ -184,6 +184,13 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
   - Vite config otimizado com optimizeDeps para Radix UI
   - Build script melhorado com 15min timeout e 8GB memória
   - Todas as dependências Radix UI compatíveis e funcionais
+- June 25, 2025. CONFIGURAÇÃO VERCEL FINALIZADA:
+  - vercel.json otimizado com builds + functions híbrido estável
+  - API adaptada para serverless com MemoryStore automático
+  - Sessões configuradas para ambiente Vercel (24h timeout)
+  - Connect-pg-simple com fallback para desenvolvimento
+  - Node.js 18.19.0 especificado (.nvmrc)
+  - Deploy pronto sem alterações no visual/frontend
 
 ## User Preferences
 

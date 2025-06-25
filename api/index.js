@@ -5,7 +5,8 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import session from 'express-session';
 import bcrypt from 'bcrypt';
-import connectPg from 'connect-pg-simple';
+import pkg from 'connect-pg-simple';
+const connectPg = pkg.default || pkg;
 import * as schema from '../shared/schema.js';
 import { eq, desc, asc } from 'drizzle-orm';
 import { z } from 'zod';
@@ -41,18 +42,33 @@ app.use((req, res, next) => {
   }
 });
 
-// Configuração de sessão para Vercel (usando MemoryStore para serverless)
-app.use(session({
+// Configuração de sessão otimizada para Vercel
+const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'las_tortillas_secret_key',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 dias
+    maxAge: 24 * 60 * 60 * 1000, // 24 horas para serverless
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax'
   }
-}));
+};
+
+// Para Vercel, usar MemoryStore simples
+if (process.env.VERCEL) {
+  sessionConfig.store = undefined; // MemoryStore padrão
+} else {
+  // Para desenvolvimento local, usar PostgreSQL store se disponível
+  try {
+    const PostgreSqlStore = connectPg(session);
+    sessionConfig.store = new PostgreSqlStore({ pool });
+  } catch (error) {
+    console.log('Usando MemoryStore para sessões');
+  }
+}
+
+app.use(session(sessionConfig));
 
 // Configuração do Passport
 app.use(passport.initialize());
