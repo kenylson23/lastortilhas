@@ -120,6 +120,9 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
 ## Changelog
 
 - June 25, 2025. Initial setup
+- June 25, 2025. Sistema de autenticação corrigido e funcionando
+- June 25, 2025. Galeria simplificada para apenas imagens (vídeos removidos)
+- June 25, 2025. Preparado para deploy no Vercel com configurações serverless
 
 ## User Preferences
 
