@@ -58,7 +58,7 @@ try {
   
   // Build backend
   console.log('🔧 Building backend...');
-  execSync('esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --external:@neondatabase/serverless --external:ws', {
+  execSync('esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --external:@neondatabase/serverless --external:ws --external:fs-extra --external:multer', {
     stdio: 'inherit'
   });
   console.log('✅ Backend build completed');
