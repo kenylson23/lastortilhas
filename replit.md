@@ -1,0 +1,126 @@
+# Las Tortillas Restaurant Management System
+
+## Overview
+
+This is a full-stack restaurant management application for "Las Tortillas," a Mexican restaurant in Angola. The system provides both a public-facing website and an administrative panel for managing menu items, reservations, and gallery content. The application uses a modern tech stack with React on the frontend, Express.js on the backend, and PostgreSQL for data persistence.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript
+- **Routing**: Wouter for client-side routing
+- **State Management**: TanStack Query (React Query) for server state management
+- **UI Components**: Custom component library built on Radix UI primitives
+- **Styling**: Tailwind CSS with custom Mexican-themed color palette
+- **Animations**: Framer Motion for smooth transitions and animations
+- **Forms**: React Hook Form with Zod validation
+- **Build Tool**: Vite for fast development and optimized builds
+
+### Backend Architecture
+- **Runtime**: Node.js with TypeScript
+- **Framework**: Express.js with custom middleware
+- **Authentication**: Passport.js with local strategy and session-based auth
+- **Session Storage**: PostgreSQL-based session store using connect-pg-simple
+- **File Handling**: Multer for image/video uploads
+- **API Design**: RESTful API with consistent response formats
+
+### Database Design
+- **Database**: PostgreSQL (configured for Neon serverless)
+- **ORM**: Drizzle ORM for type-safe database operations
+- **Schema Management**: Drizzle Kit for migrations and schema changes
+- **Connection**: Neon serverless connection with WebSocket support
+
+## Key Components
+
+### User Management
+- Role-based access control (user/admin)
+- Secure password hashing using bcrypt
+- Session-based authentication with secure cookies
+- User registration and login functionality
+
+### Menu Management
+- **Categories**: Hierarchical menu organization with custom ordering
+- **Items**: Detailed menu items with pricing, descriptions, images, and metadata
+- **Features**: Spicy level indicators, vegetarian flags, featured items
+- **Media**: Image upload and management for menu items
+
+### Reservation System
+- Public reservation form with validation
+- Admin panel for reservation management
+- Status tracking (pending, confirmed, cancelled)
+- User-specific reservation history
+
+### Gallery Management
+- Image upload capabilities (video support removed)
+- Admin interface for content management
+- Public gallery display with responsive design
+- Media ordering and activation controls
+
+### Content Management
+- Dynamic content loading from database
+- Image optimization and serving
+- Responsive media handling
+
+## Data Flow
+
+1. **Client Requests**: Frontend makes API calls through TanStack Query
+2. **Authentication**: Passport.js middleware validates sessions
+3. **Authorization**: Custom middleware checks user roles
+4. **Data Processing**: Express routes handle business logic
+5. **Database Operations**: Drizzle ORM executes type-safe queries
+6. **Response**: Consistent JSON responses with status indicators
+
+## External Dependencies
+
+### Core Dependencies
+- **@neondatabase/serverless**: Neon PostgreSQL connection
+- **drizzle-orm**: Type-safe database operations
+- **passport**: Authentication middleware
+- **bcrypt**: Password hashing
+- **multer**: File upload handling
+- **express-session**: Session management
+
+### Frontend Dependencies
+- **@tanstack/react-query**: Server state management
+- **@hookform/resolvers**: Form validation integration
+- **@radix-ui/***: Accessible UI components
+- **framer-motion**: Animation library
+- **react-icons**: Icon library
+- **wouter**: Lightweight routing
+
+### Development Dependencies
+- **tsx**: TypeScript execution
+- **esbuild**: Fast bundling
+- **vite**: Development server and build tool
+- **tailwindcss**: Utility-first CSS framework
+
+## Deployment Strategy
+
+### Build Process
+- **Development**: `npm run dev` - Concurrent frontend and backend development
+- **Build**: `npm run build` - Vite builds frontend, esbuild bundles backend
+- **Production**: `npm run start` - Serves production build
+
+### Environment Configuration
+- **Database**: Requires `DATABASE_URL` environment variable
+- **Session**: Uses `SESSION_SECRET` or defaults to development key
+- **File Storage**: Local filesystem in `public/uploads` directory
+
+### Deployment Platform
+- **Target**: Replit autoscale deployment
+- **Port**: External port 80 maps to internal port 5000
+- **Modules**: Node.js 20, PostgreSQL 16, web development tools
+
+### Database Setup
+- Automatic table creation on first run
+- Migration scripts for schema updates
+- Admin user creation utilities
+- Sample data seeding capabilities
+
+## Changelog
+
+- June 25, 2025. Initial setup
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.

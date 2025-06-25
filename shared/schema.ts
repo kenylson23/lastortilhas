@@ -60,28 +60,29 @@ export const insertMenuCategorySchema = createInsertSchema(menuCategories).pick(
 export const menuItems = pgTable("menu_items", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  type: text("type").notNull(),
   description: text("description").notNull(),
-  short_description: text("short_description").notNull(),
   price: integer("price").notNull(),
-  image: text("image").notNull(),
+  image: text("image"),
   category_id: integer("category_id").references(() => menuCategories.id, { onDelete: 'cascade' }).notNull(),
   spicy_level: integer("spicy_level").default(0), // 0-5
+  vegetarian: boolean("vegetarian").default(false),
   featured: boolean("featured").default(false),
   order: integer("order").default(0),
+  active: boolean("active").default(true),
+  created_at: timestamp("created_at").defaultNow(),
 });
 
 export const insertMenuItemSchema = createInsertSchema(menuItems).pick({
   name: true,
-  type: true,
   description: true,
-  short_description: true,
   price: true,
   image: true,
   category_id: true,
   spicy_level: true,
+  vegetarian: true,
   featured: true,
   order: true,
+  active: true,
 });
 
 // Tabela para galeria
