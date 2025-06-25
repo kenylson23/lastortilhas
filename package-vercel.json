@@ -1,0 +1,15 @@
+{
+  "name": "las-tortillas-restaurant",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "node build-simple.js",
+    "install": "cd client && npm install"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "fs-extra": "^11.2.0"
+  }
+}
