@@ -4,7 +4,7 @@ import { Express } from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
 import connectPg from "connect-pg-simple";
-import { pool } from "./db";
+import { Pool } from "pg";
 import { storage } from "./storage";
 import { User as UserType } from "@shared/schema";
 
@@ -27,10 +27,20 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  // URL do Supabase validada e funcionando
+  const WORKING_SUPABASE_URL = "postgresql://postgres.nuoblhgwtxyrafbyxjkw:Kenylson%4023@aws-0-us-east-1.pooler.supabase.com:6543/postgres";
+  const sessionPool = new Pool({
+    connectionString: WORKING_SUPABASE_URL,
+    ssl: { rejectUnauthorized: false },
+    max: 5,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 8000,
+  });
+
   // Configuração do armazenamento de sessão PostgreSQL
   const PostgresSessionStore = connectPg(session);
   const sessionStore = new PostgresSessionStore({
-    pool,
+    pool: sessionPool,
     createTableIfMissing: true
   });
 

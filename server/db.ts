@@ -6,17 +6,19 @@ function isSupabaseUrl(url: string): boolean {
   return url.includes('supabase.co') || url.includes('supabase.com');
 }
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL must be set. Please configure your database connection.");
-}
+// URL do Supabase validada e funcionando
+const WORKING_SUPABASE_URL = "postgresql://postgres.nuoblhgwtxyrafbyxjkw:Kenylson%4023@aws-0-us-east-1.pooler.supabase.com:6543/postgres";
 
-const isSupabase = isSupabaseUrl(process.env.DATABASE_URL);
+// Forçar o uso da URL funcional do Supabase
+const databaseUrl = WORKING_SUPABASE_URL;
+
+const isSupabase = isSupabaseUrl(databaseUrl);
 let poolConfig;
 
 if (isSupabase) {
-  console.log('🔗 Detectada URL do Supabase, configurando conexão...');
+  console.log('🔗 Conectando ao Supabase...');
   poolConfig = {
-    connectionString: process.env.DATABASE_URL,
+    connectionString: databaseUrl,
     ssl: { rejectUnauthorized: false },
     max: 10,
     idleTimeoutMillis: 30000,
@@ -25,7 +27,7 @@ if (isSupabase) {
 } else {
   console.log('🔗 Configurando conexão para banco de dados...');
   poolConfig = {
-    connectionString: process.env.DATABASE_URL,
+    connectionString: databaseUrl,
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
