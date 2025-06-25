@@ -17,13 +17,11 @@
 - **Solução**: Lazy loading, error handling e runtime config corrigidos
 - **Status**: api/index.js corrigido, runtime removido (usa padrão do Vercel)
 
-## Arquivos de Deploy Criados
+## Arquivos de Deploy
 
-1. **vercel.json** - Configuração principal
-2. **vercel-fixed.json** - Configuração simplificada 
-3. **vercel-simple.json** - Configuração mínima
-4. **vite.config.minimal.js** - Build otimizado
-5. **api/index.js** - Serverless function
+1. **vercel.json** - Configuração única otimizada
+2. **api/index.js** - Função serverless principal
+3. **package.json** - Script `vercel-build` para deploy automático
 
 ## Build Commands Testados
 
@@ -38,10 +36,10 @@ esbuild server/index.ts --platform=node --packages=external --bundle --format=es
 npm run build
 ```
 
-## Recomendações
+## Deploy Simplificado
 
-1. **Para deploy rápido**: Use vercel-simple.json
-2. **Para produção**: Use vercel.json principal
-3. **Se build falhar**: Use vite.config.minimal.js
+- **Uma configuração**: Apenas `vercel.json`
+- **Build automático**: Script `vercel-build` otimizado
+- **Zero configuração**: Deploy direto via Vercel CLI ou GitHub
 
-O projeto está pronto para deploy com múltiplas opções de configuração.
+O projeto está pronto para deploy com configuração única e simplificada.

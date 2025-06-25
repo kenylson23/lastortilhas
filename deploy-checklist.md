@@ -70,7 +70,8 @@ npm run check
 ### Serverless Adaptations
 - ✅ Detecção automática de ambiente Vercel
 - ✅ Express app vs HTTP server resolvido
-- ✅ Configuração de proxy para deployment
+- ✅ Configuração única simplificada
+- ✅ Build automático com vercel-build script
 
 ## Observações Importantes
 
