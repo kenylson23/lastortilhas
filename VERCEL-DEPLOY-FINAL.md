@@ -16,9 +16,7 @@ O Vercel estava ignorando as configurações de build porque o `vercel.json` con
 {
   "functions": {
     "api/index.js": {
-      "runtime": "nodejs18.x",
-      "memory": 512,
-      "maxDuration": 15
+      "runtime": "@vercel/node@3.0.7"
     }
   },
   "routes": [...]

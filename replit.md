@@ -128,6 +128,7 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
 - June 25, 2025. Resolvido erro @rollup/rollup-linux e schema database sincronizado
 - June 25, 2025. Build otimizado para Vercel (build-minimal.js) - evita travamentos
 - June 25, 2025. FINAL: Todos os problemas de deploy resolvidos - sistema 100% funcional
+- June 25, 2025. Corrigido runtime version no vercel.json para @vercel/node@3.0.7
 
 ## User Preferences
 
