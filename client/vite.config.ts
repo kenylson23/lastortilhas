@@ -32,6 +32,7 @@ export default defineConfig({
     legalComments: 'none'
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', '@radix-ui/react-radio-group']
+    include: ['react', 'react-dom', '@radix-ui/react-radio-group'],
+    exclude: ['lucide-react']
   }
 })
