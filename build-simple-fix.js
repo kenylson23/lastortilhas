@@ -72,7 +72,7 @@ fs.writeFileSync('client/dist/index.html', indexHtml);
 
 // Build backend
 console.log('Building backend...');
-execSync('esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --external:@neondatabase/serverless --external:ws --minify', {
+execSync('esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --external:@neondatabase/serverless --external:ws --external:multer --external:fs-extra --external:connect-pg-simple --minify', {
   stdio: 'inherit'
 });
 

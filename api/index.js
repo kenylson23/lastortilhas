@@ -13,6 +13,11 @@ export default async function handler(req, res) {
       // Importar routes do backend construído
       const { registerRoutes } = await import('../dist/index.js');
       
+      // Configurar variáveis para ambiente serverless
+      process.env.NODE_ENV = 'production';
+      process.env.DISABLE_FILE_UPLOADS = 'true';
+      process.env.DISABLE_SESSIONS = 'true';
+      
       // Inicializar Express
       app = express();
       app.set('trust proxy', 1);

@@ -132,6 +132,7 @@ This is a full-stack restaurant management application for "Las Tortillas," a Me
 - June 25, 2025. Adicionado .nvmrc e configurado nodejs18.x para compatibilidade Vercel
 - June 25, 2025. Corrigido frontend - criado build estático funcional para Vercel
 - June 25, 2025. PROJETO PREPARADO: Todos os arquivos organizados e prontos para deploy Vercel
+- June 25, 2025. PROBLEMAS RESOLVIDOS: WebSocket, file system e sessions adaptados para serverless
 
 ## User Preferences
 
